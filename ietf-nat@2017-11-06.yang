@@ -9,8 +9,8 @@ module ietf-nat {
   import ietf-yang-types { prefix yang; }
   import ietf-interfaces { prefix if; }
 
-
-  organization "IETF OPSAWG (Operations and Management Area Working Group)";
+  organization 
+    "IETF OPSAWG (Operations and Management Area Working Group)";
 
   contact
 
@@ -58,7 +58,7 @@ module ietf-nat {
      This version of this YANG module is part of RFC XXXX; see
      the RFC itself for full legal notices.";
 
-  revision 2017-11-06 {
+  revision 2017-11-13 {
     description
       "Initial revision.";
     reference
@@ -127,10 +127,11 @@ module ietf-nat {
 
        When a dedicated /64 prefix is not available for translation from
        DHCPv6-PD, the CLAT may perform NAT44 for all IPv4 LAN packets so
-       that all the LAN-originated IPv4 packets appear from a single IPv4
-       address and are then statelessly translated to one interface IPv6
-       address that is claimed by the CLAT via the Neighbor Discovery 
-       Protocol (NDP) and defended with Duplicate Address Detection.";
+       that all the LAN-originated IPv4 packets appear from a single 
+       IPv4 address and are then statelessly translated to one interface 
+       IPv6 address that is claimed by the CLAT via the Neighbor  
+       Discovery Protocol (NDP) and defended with Duplicate Address 
+       Detection.";
     reference
       "RFC 6877: 464XLAT: Combination of Stateful and Stateless
                  Translation";
@@ -330,7 +331,8 @@ module ietf-nat {
       type uint32;    
       description
         "A unique identifier of a mapping entry. This identifier can be 
-         automatically assigned by the NAT instance or be explicitely configured.";
+         automatically assigned by the NAT instance or be explicitely 
+         configured.";
     }
 
     leaf type {
@@ -494,8 +496,8 @@ module ietf-nat {
       key "id";
 
       description
-        "A NAT instance. This identifier can be automatically assigned or 
-         explicitely configured.";
+        "A NAT instance. This identifier can be automatically assigned
+         or explicitely configured.";
 
       leaf id {
         type uint32;
@@ -544,7 +546,7 @@ module ietf-nat {
             "Indicates source port NAT restriction support.";
           reference
              "RFC 7596: Lightweight 4over6: An Extension to 
-                 the Dual-Stack Lite Architecture.";
+                        the Dual-Stack Lite Architecture.";
         }
 
         leaf static-mapping-support {
@@ -580,7 +582,8 @@ module ietf-nat {
         leaf port-parity-preservation-support {
           type boolean;
           description
-            "Indicates whether port parity preservation is supported.";
+            "Indicates whether port parity preservation is 
+             supported.";
           reference
             "Section 8 of RFC 7857.";
         }
@@ -588,13 +591,15 @@ module ietf-nat {
         leaf address-roundrobin-support {
           type boolean;
           description
-           "Indicates whether address allocation round robin is supported.";
+           "Indicates whether address allocation round robin is 
+            supported.";
         }
 
         leaf paired-address-pooling-support {
           type boolean;
           description
-            "Indicates whether paired-address-pooling is supported";
+            "Indicates whether paired-address-pooling is 
+             supported";
            reference
              "REQ-2 of RFC 4787.";
         }
@@ -612,7 +617,8 @@ module ietf-nat {
         leaf address-dependent-mapping-support {
           type boolean;
           description
-            "Indicates whether address-dependent-mapping is supported.";
+            "Indicates whether address-dependent-mapping is 
+             supported.";
            reference
              "Section 4 of RFC 4787.";
         }
@@ -620,7 +626,8 @@ module ietf-nat {
         leaf address-and-port-dependent-mapping-support {
           type boolean;
           description
-            "Indicates whether address-and-port-dependent-mapping is supported.";
+            "Indicates whether address-and-port-dependent-mapping is 
+             supported.";
            reference
              "Section 4 of RFC 4787.";
         }
@@ -628,7 +635,8 @@ module ietf-nat {
         leaf endpoint-independent-filtering-support {
           type boolean;
           description
-            "Indicates whether endpoint-independent-filtering is supported.";
+            "Indicates whether endpoint-independent-filtering is 
+             supported.";
            reference
              "Section 5 of RFC 4787.";
         }
@@ -636,7 +644,8 @@ module ietf-nat {
         leaf address-dependent-filtering {
           type boolean;
           description
-            "Indicates whether address-dependent-filtering is supported.";
+            "Indicates whether address-dependent-filtering is 
+             supported.";
            reference
              "Section 5 of RFC 4787.";
         }
@@ -644,7 +653,8 @@ module ietf-nat {
         leaf address-and-port-dependent-filtering {
           type boolean;
           description
-            "Indicates whether address-and-port-dependent is supported.";
+            "Indicates whether address-and-port-dependent is 
+             supported.";
            reference
              "Section 5 of RFC 4787.";
         }
@@ -653,22 +663,22 @@ module ietf-nat {
           type enumeration {
             enum "unssupported"  {
               description
-                "No capability to translate incoming fragments. All received fragments
-                 are dropped.";
+                "No capability to translate incoming fragments. 
+                 All received fragments are dropped.";
             }
 
             enum "in-order"  {
               description
                 "The NAT instance is able to translate fragments only if
-                 they are received in order. That is, in particular the header
-                 is in the first packet. Fagements received out of order 
-                 are droped. ";
+                 they are received in order. That is, in particular the 
+                 header is in the first packet. Fagements received 
+                 out of order are droped. ";
             }
 
             enum "out-of-order"  {
               description
-                "The NAT instance is able to translate a fragment even if it 
-                 is received out of order. 
+                "The NAT instance is able to translate a fragment even  
+                 if it is received out of order. 
 
                  This behavior is the one recommended in RFC4787.";
               reference
@@ -677,7 +687,8 @@ module ietf-nat {
           }
           description
             "The fragment behavior is the NAT instance's capability to
-             translate fragments received on the external interface of the NAT.";
+             translate fragments received on the external interface of
+             the NAT.";
         }
 
       }
@@ -699,9 +710,11 @@ module ietf-nat {
           type inet:ip-prefix;
           mandatory true;
           description
-            "The IP addresses that match should not be translated. According to 
-             REQ#6 of RFC6888, it must be possible to administratively turn off
-             translation for specific destination addresses and/or ports.";
+            "The IP addresses that match should not be translated. 
+
+             According to REQ#6 of RFC6888, it must be possible to
+             administratively turn off translation for specific
+             destination addresses and/or ports.";
           reference
             "REQ#6 of RFC6888.";
         }
@@ -709,11 +722,12 @@ module ietf-nat {
         leaf port {
           type inet:port-number;
           description
-            "According to REQ#6 of RFC6888, it must be possible to administratively
-             turn off translation for specific destination addresses and/or ports.
+            "According to REQ#6 of RFC6888, it must be possible to 
+             administratively turn off translation for specific 
+             destination addresses and/or ports.
 
-             If no prefix is defined, the NAT pass through bound to a given port 
-             applies for any destination address.";
+             If no prefix is defined, the NAT pass through bound 
+             to a given port applies for any destination address.";
 
           reference
             "REQ#6 of RFC6888.";
@@ -739,11 +753,12 @@ module ietf-nat {
          list clat-ipv6-prefixes {
            key ipv6-prefix;
            description
-             "464XLAT double translation treatment is stateless when a dedicated /64
-              is available for translation on the CLAT. Otherwise, the CLAT will have
-              both stateful and stateless since it requires NAT44 from the LAN to 
-              a single IPv4 address and then stateless translation to a single IPv6
-              address.";
+             "464XLAT double translation treatment is stateless when a 
+              dedicated /64 is available for translation on the CLAT. 
+              Otherwise, the CLAT will have both stateful and stateless
+              since it requires NAT44 from the LAN to a single IPv4
+              address and then stateless translation to a single 
+              IPv6 address.";
             reference
               "RFC 6877: 464XLAT: Combination of Stateful and Stateless
                          Translation";
@@ -875,16 +890,17 @@ module ietf-nat {
            type inet:ipv6-prefix;
            mandatory true;
            description
-             "A NAT64 prefix. Can be Network-Specific Prefix (NSP) or Well-Known 
-              Prefix (WKP).
+             "A NAT64 prefix. Can be Network-Specific Prefix (NSP) or  
+              Well-Known Prefix (WKP).
 
-              Organizations deploying stateless IPv4/IPv6 translation should 
-              assign a Network-Specific Prefix to their IPv4/IPv6 translation 
-              service.
+              Organizations deploying stateless IPv4/IPv6 translation  
+              should assign a Network-Specific Prefix to their 
+              IPv4/IPv6 translation service.
  
-              For stateless NAT64, IPv4-translatable IPv6 addresses must use the 
-              selected Network-Specific Prefix.  Both IPv4-translatable IPv6 addresses 
-              and IPv4-converted IPv6 addresses should use the same prefix.";
+              For stateless NAT64, IPv4-translatable IPv6 addresses 
+              must use the selected Network-Specific Prefix.   
+              Both IPv4-translatable IPv6 addresses and IPv4-converted 
+              IPv6 addresses should use the same prefix.";
            reference
              "Sections 3.3 and 3.4 of RFC 6052.";
          }
@@ -914,7 +930,8 @@ module ietf-nat {
          key pool-id;
 
          description
-           "Pool of external IP addresses used to service internal hosts.
+           "Pool of external IP addresses used to service internal 
+            hosts.
 
             A pool is a set of IP prefixes.";
 
@@ -922,12 +939,14 @@ module ietf-nat {
            type uint32;
            must ". >= 1";
            description
-             "An identifier of the address pool.
+             "An identifier that uniquely identifies the address pool  
+              within a NAT instance.
              
-              The identifier must be greater than zero as per RFC 7659.";
+              The identifier must be greater than zero as per 
+              RFC 7659.";
            reference
-             "RFC 7659: Definitions of Managed Objects for Network 
-                        Address Translators (NATs)";
+             "RFC 7659: Definitions of Managed Objects for  
+                        Network Address Translators (NATs)";
          }
 
          leaf external-ip-pool {
@@ -943,8 +962,8 @@ module ietf-nat {
          description
            "Configures contiguous and non-contiguous port ranges.
             
-            The port set is used to restrict the external source port
-            numbers used by the translator.";
+            The port set is used to restrict the external source 
+            port numbers used by the translator.";
 
          uses port-set;
        }
@@ -956,7 +975,8 @@ module ietf-nat {
          description
            "Enable/Disable destination NAT.
 
-            A NAT44 may be configured to enable Destination NAT, too.";
+            A NAT44 may be configured to enable Destination 
+            NAT, too.";
         }
 
         list dst-ip-address-pool {
@@ -991,8 +1011,8 @@ module ietf-nat {
           key protocol-id;
 
           description
-            "Configure the transport protocols to be handled by the
-             translator.
+            "Configure the transport protocols to be handled by 
+             the translator.
 
              TCP and UDP are supported by default.";
 
@@ -1012,7 +1032,8 @@ module ietf-nat {
           leaf protocol-name {
             type string;
             description
-              "The name of the Upper-layer protocol associated with this mapping.
+              "The name of the Upper-layer protocol associated 
+               with this mapping.
 
                Values are taken from the IANA protocol registry:
                https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
@@ -1100,7 +1121,8 @@ module ietf-nat {
                 "Paired address pooling informs the NAT
                  that all the flows from an internal IP
                  address must be assigned the same external
-                 address. This is the recommended behavior for NAPT/NAT64.";
+                 address. This is the recommended behavior for 
+                 NAPT/NAT64.";
               reference
                 "RFC 4787: Network Address Translation (NAT) Behavioral 
                            Requirements for Unicast UDP";
@@ -1115,8 +1137,9 @@ module ietf-nat {
           type enumeration {
             enum "random"  {
               description
-                "Port randomization is enabled. A NAT port allocation scheme 
-                 should make it hard for attackers to guess port numbers";
+                "Port randomization is enabled. A NAT port allocation  
+                 scheme should make it hard for attackers to guess port 
+                  numbers";
               reference
                 "REQ-15 of RFC 6888";
             }
@@ -1129,14 +1152,15 @@ module ietf-nat {
 
             enum "port-parity-preservation"  {
               description
-                "Indicates whether the NAT should preserve the port parity of 
-                 the internal port number.";
+                "Indicates whether the NAT should preserve the port  
+                 parity of the internal port number.";
             }
  
             enum "port-range-allocation"  {
               description
                 "Indicates whether the NAT assigns a range of ports for 
-                 an internal host. This scheme allows to minimize log volume.";
+                 an internal host. This scheme allows to minimize 
+                 log volume.";
               reference
                 "REQ-14 of RFC 6888";
             }
@@ -1224,24 +1248,25 @@ module ietf-nat {
              }
            }
            description
-             "The fragment behavior instructs the NAT about the behavior to follow
-              to translate fragments received on the external interface of the NAT.";
+             "The fragment behavior instructs the NAT about the behavior 
+              to follow to translate fragments received on the external 
+              interface of the NAT.";
           }
 
         list port-quota {
           if-feature "napt44 or nat64";
           key quota-type;          
           description
-            "Configures a port quota to be assigned per
-             subscriber. It corresponds to the maximum
-             number of ports to be used by a subscriber.";
+            "Configures a port quota to be assigned per subscriber. 
+             It corresponds to the maximum number of ports to be 
+             used by a subscriber.";
 
           leaf port-limit {
             type uint16;
             description
-              "Configures a port quota to be assigned per
-               subscriber. It corresponds to the maximum
-               number of ports to be used by a subscriber.";
+              "Configures a port quota to be assigned per subscriber. 
+               It corresponds to the maximum number of ports to be 
+               used by a subscriber.";
             reference
               "REQ-4 of RFC 6888.";
           }
@@ -1249,8 +1274,8 @@ module ietf-nat {
           leaf quota-type {
               type uint8;
               description
-                "Indicates whether the port quota applies to
-                 all protocols (0) or to a specific transport."; 
+                "Indicates whether the port quota applies to 
+                 all protocols (0) or to a specific protocol."; 
           }
         }
 
@@ -1290,8 +1315,8 @@ module ietf-nat {
                 "UDP inactivity timeout. That is the time a mapping
                  will stay active without packets traversing the NAT.";
               reference
-                "RFC 4787: Network Address Translation (NAT) Behavioral 
-                           Requirements for Unicast UDP";
+                "RFC 4787: Network Address Translation (NAT)  
+                           Behavioral Requirements for Unicast UDP";
             }
 
             leaf tcp-idle-timeout {
@@ -1422,10 +1447,10 @@ module ietf-nat {
                  The length of time and the maximum number of ports in
                  this state must be configurable by the administrator.
 
-                 This is necessary in order to prevent collisions between 
-                 old and new mappings and sessions. It ensures that all 
-                 established sessions are broken instead of redirected to
-                 a different peer.";
+                 This is necessary in order to prevent collisions  
+                 between old and new mappings and sessions. It ensures 
+                 that all established sessions are broken instead of 
+                 redirected to a different peer.";
               reference
                 "REQ#8 of RFC 6888.";
             }
@@ -1475,7 +1500,8 @@ module ietf-nat {
             leaf transport-protocol {
               type uint32;
               description
-                "The transport protocol used by the ALG (e.g., TCP, UDP).";
+                "The transport protocol used by the ALG 
+                 (e.g., TCP, UDP).";
             }
 
             container dst-transport-port {
@@ -1513,39 +1539,64 @@ module ietf-nat {
           container notify-pool-usage {
             if-feature "basic-nat44 or napt44 or nat64";
             description
-              "Notification of pool usage when certain criteria are met.";
+              "Notification of pool usage when certain criteria 
+               are met.";
 
             leaf pool-id {
               type uint32;
               description
-                "Pool-ID for which the notification criteria is defined";
+                "Pool-ID for which the notification criteria 
+                 is defined";
             }
 
             leaf high-threshold {
               type percent;
-              mandatory true;
               description
-                "Notification must be generated when the defined high threshold is reached.
+                "Notification must be generated when the defined high 
+                 threshold is reached.
 
-                 For example, if a notification is required when the pool utilization reaches
-                 90%, this configuration parameter must be set to 90%.";
+                 For example, if a notification is required when the  
+                 pool utilization reaches 90%, this configuration  
+                 parameter must be set to 90%.
+
+                 0% indicates that no high treshold is enabled.";
             }
 
             leaf low-threshold {
               type percent;
+              must ". >= ../high-threshold" {
+                error-message
+                  "The upper port number must be greater than or
+                   equal to lower port number.";
+              }
               description
-                "Notification must be generated when the defined
-                 low threshold is reached.
+                "Notification must be generated when the defined low 
+                 threshold is reached.
 
-                 For example, if a notification is required when
-                 the pool utilization reaches below 10%,
-                 this configuration parameter must be set to 10%.";
+                 For example, if a notification is required when the 
+                 pool utilization reaches below 10%, this  
+                 configuration parameter must be set to 10%.";
             }
-          }
+
+            leaf notify-interval {
+              type uint32 {
+                 range "1 .. 3600";
+              }
+              units "seconds";
+              default '20'; 
+              description
+                "Minimum number of seconds between successive 
+                 notifications for this pool.";
+
+              reference 
+                "RFC 7659: Definitions of Managed Objects for 
+                           Network Address Translators (NATs)";
+            }
+          } 
 
           container external-realm {
             description 
-              "Identifies the external realm of the NAT.";                   
+              "Identifies the external realm of the NAT instance.";                   
 
             choice realm-type {
               description 
@@ -1571,100 +1622,173 @@ module ietf-nat {
             "Information about the configuration parameters that
              limits the mappings based upon various criteria.";
 
-          leaf limit-per-subscriber {
+          leaf limit-subscribers {
             type uint32;
             description
-              "Maximum number of NAT mappings per subscriber.
+              "Maximum number of subscribers that can be serviced  
+               by a NAT instance.
                
                A subscriber is identifier by a given prefix.";
+             reference
+               "RFC 7659: Definitions of Managed Objects for 
+                          Network Address Translators (NATs)";           
           }
 
-          leaf limit-per-vrf {
+          leaf limit-address-mapings {
             type uint32;
             description
-              "Maximum number of NAT mappings per VLAN/VRF.";
+              "Maximum number of address mappings that can be  
+               handled by a NAT instance.
+               
+               When this limit is reached, packets that would 
+               normaly trigger translation, will be droped.";
+             reference
+               "RFC 7659: Definitions of Managed Objects
+                          for Network Address Translators
+                          (NATs)";           
           }
 
-          leaf limit-per-instance {
+          leaf limit-port-mappings {
             type uint32;
-            mandatory true;
             description
-              "Maximum number of NAT mappings per instance.";               
+              "Maximum number of port mappings that can be handled  
+               by a NAT instance.
+               
+               When this limit is reached, packets that would  
+               normaly trigger translation, will be droped.";
+             reference
+               "RFC 7659: Definitions of Managed Objects for 
+                          Network Address Translators (NATs)";               
           }
 
-          leaf limit-per-udp {
-            type uint32;
-            mandatory true;
-            description
-              "Maximum number of UDP NAT mappings per subscriber.";
-          }
+          list limit-per-protocol {
+            if-feature "napt44 or nat64 or dst-nat";
+            key protocol-id;
 
-          leaf limit-per-tcp {
-            type uint32;
-            mandatory true;
             description
-              "Maximum number of TCP NAT mappings per subscriber.";
-          }
+              "Configure limits per transport protocol";
 
-          leaf limit-per-icmp {
-            type uint32;
-            mandatory true;
-            description
-              "Maximum number of ICMP NAT mappings per subscriber.";
+            leaf protocol-id {
+              type uint8;
+              mandatory true;
+              description
+                "Upper-layer protocol associated with this mapping.
+
+                 Values are taken from the IANA protocol registry:
+                 https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+
+                 For example, this field contains 6 (TCP) for a TCP
+                 mapping or 17 (UDP) for a UDP mapping.";
+            }
+
+            leaf limit {
+              type uint32;
+              description
+                "Maximum number of protocol-specific NAT mappings 
+                 per instance.";
+            }
           }
         }
 
         container connection-limit {
-          if-feature "napt44 or nat64";
+          if-feature "basic-nat44 or napt44 or nat64";
           description
-            "Information about the configuration parameters that rate limit 
-             the translation based upon various criteria.";
+            "Information about the configuration parameters that 
+             rate limit the translation based upon various criteria.";
 
           leaf limit-per-subscriber {
             type uint32;
             units "bits/second"; 
             description
-              "Rate-limit the number of new mappings and sessions per subscriber.";
+              "Rate-limit the number of new mappings and sessions
+               per subscriber.";
            }
-
-          leaf limit-per-vrf {
-            type uint32;
-            units "bits/second";
-            description
-              "Rate-limit the number of new mappings and sessions per VLAN/VRF.";
-          }
 
           leaf limit-per-instance {
             type uint32;
             units "bits/second";
             mandatory true;
             description
-              "Rate-limit the number of new mappings and sessions per instance.";
+              "Rate-limit the number of new mappings and sessions
+               per instance.";
           }
 
-          leaf limit-per-udp {
-            type uint32;
-            units "bits/second";
-            mandatory true;
+          list limit-per-protocol {
+            if-feature "napt44 or nat64";
+            key protocol-id;
             description
-              "Rate-limit the number of new UDP mappings and sessions per subscriber.";
-          }
+              "Configure limits per transport protocol";
 
-          leaf limit-per-tcp {
-            type uint32;
-            units "bits/second";
-            mandatory true;
-            description
-              "Rate-limit the number of new TCP mappings and sessions per subscriber.";
-          }
+            leaf protocol-id {
+              type uint8;
+              mandatory true;
+              description
+                "Upper-layer protocol associated with this mapping.
 
-          leaf limit-per-icmp {
-            type uint32;
-            units "bits/second";
-            mandatory true;
-            description
-              "Rate-limit the number of new ICMP mappings and sessions per subscriber.";
+                 Values are taken from the IANA protocol registry:
+                 https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+
+                 For example, this field contains 6 (TCP) for a TCP
+                 mapping or 17 (UDP) for a UDP mapping.";
+            }
+
+            leaf limit {
+              type uint32;
+              description
+                "Rate-limit the number of protocol-specific mappings  
+                 and sessions per instance.";
+            }
           }
+        }
+      
+        container notification-limits {
+          description "Sets notification limits.";
+
+        leaf notify-interval {
+            if-feature "basic-nat44 or napt44 or nat64";
+            type uint32 {
+                 range "1 .. 3600";
+            }
+            units "seconds";
+            default '10'; 
+            description
+                "Minimum number of seconds between successive 
+                 notifications for  this NAT instance.";
+            reference 
+              "RFC 7659: Definitions of Managed Objects  
+                         for Network Address Translators (NATs)";
+        }
+
+        leaf notify-addresses-usage {
+            if-feature "basic-nat44 or napt44 or nat64";
+            type percent;
+            description
+              "Notification of address mappings usage over 
+               the whole NAT instance.
+
+               Notification must be generated when the defined
+               threshold is reached.
+
+               For example, if a notification is required when
+               the address mappings utilization reaches 90%, 
+               this configuration parameter must be set 
+               to 90%.";
+         }
+
+        leaf notify-ports-usage {
+            if-feature "napt44 or nat64";
+            type percent;
+            description
+              "Notification of port mappings usage over the 
+               whole NAT instance.
+
+               Notification must be generated when the defined
+               threshold is reached.
+
+               For example, if a notification is required when   
+               the port mappings utilization reaches 90%, this 
+               configuration parameter must be set to 90%.";
+         }
         }
 
         leaf logging-enable {
@@ -1674,18 +1798,18 @@ module ietf-nat {
             "Enable logging features.";
           reference
             "Section 2.3 of RFC 6908 and REQ-12 of RFC6888.";
-          }
+        }
 
         container mapping-table {
           if-feature "basic-nat44 or napt44 or nat64 or clat or dst-nat";
           description
-            "NAT mapping table. Applicable for functions which maintain static
-             and/or dynamic mappings, such as NAT44, Destination NAT, NAT64, or CLAT.";
+            "NAT mapping table. Applicable for functions which maintain 
+             static and/or dynamic mappings, such as NAT44, Destination  
+             NAT, NAT64, or CLAT.";
 
           list mapping-entry {
             key "index";
-            description
-              "NAT mapping entry.";
+            description "NAT mapping entry.";
             uses mapping-entry;
           }
         }
@@ -1695,6 +1819,16 @@ module ietf-nat {
                   
           description
             "Statistics related to the NAT instance.";
+
+          leaf discontinuity-time {
+            type yang:date-and-time;
+            mandatory true;
+            description
+              "The time on the most recent occasion at which the NAT 
+               instance suffered a discontinuity.  This must be 
+               initialized when the NAT instance is configured 
+               or rebooted.";
+          }
              
           container traffic-statistics {
             description 
@@ -1746,20 +1880,89 @@ module ietf-nat {
                 "Number of dropped fragments on the external realm.";
             }
 
-            leaf dropped-port-map-packets {
+            leaf dropped-address-limit-packets {
+              if-feature "basic-nat44 or napt44 or nat64";
+              type yang:zero-based-counter64;
+              description 
+                "Number of dropped packets because an address limit
+                  is reached.";
+            }
+
+            leaf dropped-address-limit-bytes {
+              if-feature "basic-nat44 or napt44 or nat64";
+              type yang:zero-based-counter64;
+              units 'bytes';
+              description 
+                "Counter of dropped packets because an address limit 
+                  is reached, in bytes.";
+            }
+
+            leaf dropped-address-packets {
+              if-feature "basic-nat44 or napt44 or nat64";
+              type yang:zero-based-counter64;
+              description 
+                "Number of dropped packets because no address is  
+                 available for allocation.";
+            }
+
+            leaf dropped-address-bytes {
+              if-feature "basic-nat44 or napt44 or nat64";
+              type yang:zero-based-counter64;
+              units 'bytes';
+              description 
+                "Counter of dropped packets because no address is  
+                 available for allocation, in bytes.";
+            }
+
+            leaf dropped-port-limit-packets {
               if-feature "napt44 or nat64";
               type yang:zero-based-counter64;
               description 
-                "Number of dropped packets because no port is available for allocation.";
+                "Number of dropped packets because a port limit 
+                 is reached.";
             }
 
-            leaf dropped-port-map-bytes {
+            leaf dropped-port-limit-bytes {
               if-feature "napt44 or nat64";
               type yang:zero-based-counter64;
               units 'bytes';
               description 
-                "Counter of dropped packets because no port is available for
-                 allocation, in bytes.";
+                "Counter of dropped packets because a port limit 
+                 is reached, in bytes.";
+            }
+
+            leaf dropped-port-packets {
+              if-feature "napt44 or nat64";
+              type yang:zero-based-counter64;
+              description 
+                "Number of dropped packets because no port is 
+                 available for allocation.";
+            }
+
+            leaf dropped-port-bytes {
+              if-feature "napt44 or nat64";
+              type yang:zero-based-counter64;
+              units 'bytes';
+              description 
+                "Counter of dropped packets because no port is 
+                 available for allocation, in bytes.";
+            }
+
+            leaf dropped-subscriber-packets {
+              if-feature "basic-nat44 or napt44 or nat64";
+              type yang:zero-based-counter64;
+              description 
+                "Number of dropped packets because the subscriber 
+                 limit per instance is reached.";
+            }
+
+            leaf dropped-subscriber-bytes {
+              if-feature "basic-nat44 or napt44 or nat64";
+              type yang:zero-based-counter64;
+              units 'bytes';
+              description 
+                "Counter of dropped packets because the subscriber
+                  limit per instance is reached, in bytes.";
             }
           }
 
@@ -1767,40 +1970,57 @@ module ietf-nat {
            description 
              "Mapping statistics.";  
 
-            leaf total-mappings {
+            leaf total-address-mappings {
               if-feature "basic-nat44 or napt44 or nat64 or clat or dst-nat";
               type yang:gauge32;
               description
-                "Total number of NAT mappings present at a given time. It includes 
-                 both static and dynamic mappings.";
+                "Total number of address mappings present at a given
+                  time. It includes both static and dynamic mappings.";
+              reference
+               "Section 3.3.8 of RFC 7659"; 
+            }
+
+            leaf total-port-mappings {
+              if-feature "napt44 or nat64";
+              type yang:gauge32;
+              description
+                "Total number of NAT port mappings present at 
+                 a given time. It includes both static and dynamic
+                 mappings.";
+              reference
+               "Section 3.3.9 of RFC 7659"; 
             }
 
             leaf total-tcp-mappings {
               if-feature "napt44 or nat64";
               type yang:gauge32;
               description
-                "Total number of TCP mappings present at a given time.";
+                "Total number of TCP mappings present at 
+                 a given time.";
             }
 
             leaf total-udp-mappings {
               if-feature "napt44 or nat64";
               type yang:gauge32;
               description
-                "Total number of UDP mappings present at a given time.";
+                "Total number of UDP mappings present at
+                 a given time.";
             }
 
            leaf total-icmp-mappings {
              if-feature "napt44 or nat64";
              type yang:gauge32;
               description
-                "Total number of ICMP mappings present at a given time.";
+                "Total number of ICMP mappings present at
+                 a given time.";
             }
           }
 
           container pools-stats {
             if-feature "basic-nat44 or napt44 or nat64";
             description
-              "Statistics related to address/prefix pools usage";
+              "Statistics related to address/prefix pools 
+               usage";
 
             leaf addresses-allocated {
               type yang:gauge32;
@@ -1811,9 +2031,10 @@ module ietf-nat {
             leaf addresses-free {
               type yang:gauge32;
               description
-                "Number of unallocated addresses of all pools at a given time.
-                 The sum of unallocated and allocated addresses is the total 
-                 number of addresses of the pool.";
+                "Number of unallocated addresses of all pools at
+                 a given time. The sum of unallocated and allocated 
+                 addresses is the total number of addresses of 
+                 the pools.";
             }
 
             container ports-stats {
@@ -1844,7 +2065,18 @@ module ietf-nat {
             leaf pool-id {
               type uint32;
               description
-                "Unique Identifier that represents a pool of addresses/prefixes.";
+                "Unique Identifier that represents a pool of 
+                 addresses/prefixes.";
+            }
+
+            leaf discontinuity-time {
+              type yang:date-and-time;
+              mandatory true;
+              description
+                "The time on the most recent occasion at which this 
+                 pool counters suffered a discontinuity.  This must  
+                 be initialized when the address pool is 
+                 configured.";
             }
 
             container pool-stats {
@@ -1862,7 +2094,7 @@ module ietf-nat {
                 description
                   "Number of unallocated addresses in this pool.";
               }
-            }
+             }
 
             container port-stats {
               if-feature "napt44 or nat64";
@@ -1892,17 +2124,18 @@ module ietf-nat {
    * Notifications
    */
 
-  notification nat-event {
+  notification nat-pool-event {
     if-feature "basic-nat44 or napt44 or nat64";
     description
-      "Notifications must be generated when the defined high/low threshold
-       is reached. Related configuration parameters must be provided to 
-       trigger the notifications.";
+      "Notifications must be generated when the defined high/low
+       threshold is reached. Related configuration parameters  
+       must be provided to trigger the notifications.";
 
-    leaf id {
+    leaf id {    
       type leafref {
         path "/nat/instances/instance/id";
       }
+      mandatory true; 
       description
         "NAT instance Identifier.";
     }
@@ -1922,6 +2155,7 @@ module ietf-nat {
              "/nat/instances/instance/policy/"
              + "external-ip-address-pool/pool-id";
       }
+      mandatory true;
       description
         "Pool Identifier.";
     }
@@ -1930,7 +2164,36 @@ module ietf-nat {
       type percent;
       mandatory true;
       description
-        "A treshhold has been fired.";
+        "A treshhold (high-threshold or low-threshold) has 
+         been fired.";
+    }
+  }
+
+  notification nat-instance-event {
+    if-feature "basic-nat44 or napt44 or nat64";
+    description
+      "Notifications must be generated when notify-addresses-usage
+       and/or notify-ports-usagethreshold are reached.";
+
+    leaf id {    
+      type leafref {
+        path "/nat/instances/instance/id";
+      }
+      mandatory true; 
+      description
+        "NAT instance Identifier.";
+    }
+
+    leaf notify-addresses-threshold {
+      type percent;
+      description
+        "The notify-addresses-usage treshhold has been fired.";
+    }
+
+    leaf notify-ports-threshold {
+      type percent;
+      description
+        "The notify-ports-usage treshhold has been fired.";
     }
   }
 }
