@@ -453,27 +453,27 @@ Internet-Draft             Yang Model for NAT              November 2017
    transport-protocol:  Indicates the transport protocol (e.g., UDP,
       TCP, ICMP) of a given mapping.
 
-   internal-src-address:  Indicates the source IP address as used by an
-      internal host.
+   internal-src-address:  Indicates the source IP address/prefix as used
+      by an internal host.
 
    internal-src-port:  Indicates the source port number (or ICMP
       identifier) as used by an internal host.
 
-   external-src-address:   Indicates the source IP address as assigned
-      by the NAT.
+   external-src-address:   Indicates the source IP address/prefix as
+      assigned by the NAT.
 
    external-src-port:   Indicates the source port number (or ICMP
       identifier) as assigned by the NAT.
 
-   internal-dst-address:  Indicates the destination IP address as used
-      by an internal host when sending a packet to a remote host.
+   internal-dst-address:  Indicates the destination IP address/prefix as
+      used by an internal host when sending a packet to a remote host.
 
-   internal-dst-port:   Indicates the destination IP address as used by
+   internal-dst-port:   Indicates the destination port number as used by
       an internal host when sending a packet to a remote host.
 
-   external-dst-address:  Indicates the destination IP address used by a
-      NAT when processing a packet issued by an internal host towards a
-      remote host.
+   external-dst-address:  Indicates the destination IP address/prefix
+      used by a NAT when processing a packet issued by an internal host
+      towards a remote host.
 
    external-dst-port:   Indicates the destination port number used by a
       NAT when processing a packet issued by an internal host towards a
