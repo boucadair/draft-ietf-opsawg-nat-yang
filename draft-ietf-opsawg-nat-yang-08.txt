@@ -397,7 +397,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 2.6.  Port Set Assignment
 
    Port numbers can be assigned by a NAT individually (that is, a single
-   port is a assigned on a per session basis).  Nevertheless, this port
+   port is assigned on a per session basis).  Nevertheless, this port
    allocation scheme may not be optimal for logging purposes.
    Therefore, a NAT function should be able to assign port sets (e.g.,
    [RFC7753]) to optimize the volume of the logging data (REQ-14 of
@@ -627,9 +627,7 @@ Internet-Draft             Yang Model for NAT              November 2017
    o  The set of protocols supported by each NAT instance.
 
    o  Address pools for each NAT instance, including for each pool the
-      pool index, address realm, address type, minimum and maximum port
-      number, the address ranges assigned to that pool, and policies for
-      access to that pool's resources.
+      pool index, address realm, and minimum and maximum port number.
 
    o  Static address and port mapping entries.
 
@@ -666,6 +664,8 @@ module: ietf-nat
              |  +--ro endpoint-independent-filtering-support?       boolean
              |  +--ro address-dependent-filtering?                  boolean
              |  +--ro address-and-port-dependent-filtering?         boolean
+             |  +--ro fragment-behavior?                            enumeration
+             +--rw nat-pass-through* [id] {basic-nat44 or napt44 or dst-nat}?
 
 
 
@@ -674,8 +674,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 12]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-             |  +--ro fragment-behavior?                            enumeration
-             +--rw nat-pass-through* [id] {basic-nat44 or napt44 or dst-nat}?
              |  +--rw id        uint32
              |  +--rw prefix    inet:ip-prefix
              |  +--rw port?     inet:port-number
@@ -722,6 +720,8 @@ Internet-Draft             Yang Model for NAT              November 2017
              |  |  +--rw match-id    uint32
              |  |  +--rw subnet      inet:ip-prefix
              |  +--rw address-allocation-type?    enumeration
+             |  +--rw port-allocation-type?       enumeration {napt44 or nat64}?
+             |  +--rw mapping-type?               enumeration {napt44 or nat64}?
 
 
 
@@ -730,8 +730,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 13]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-             |  +--rw port-allocation-type?       enumeration {napt44 or nat64}?
-             |  +--rw mapping-type?               enumeration {napt44 or nat64}?
              |  +--rw filtering-type?             enumeration {napt44 or nat64}?
              |  +--rw fragment-behavior?          enumeration {napt44 or nat64}?
              |  +--rw port-quota* [quota-type] {napt44 or nat64}?
@@ -778,6 +776,8 @@ Internet-Draft             Yang Model for NAT              November 2017
              |  +--rw limit-subscribers?       uint32
              |  +--rw limit-address-mapings?   uint32
              |  +--rw limit-port-mappings?     uint32
+             |  +--rw limit-per-protocol* [protocol-id] {napt44 or nat64 or dst-nat}?
+             |     +--rw protocol-id    uint8
 
 
 
@@ -786,8 +786,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 14]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-             |  +--rw limit-per-protocol* [protocol-id] {napt44 or nat64 or dst-nat}?
-             |     +--rw protocol-id    uint8
              |     +--rw limit?         uint32
              +--rw connection-limit {basic-nat44 or napt44 or nat64}?
              |  +--rw limit-per-subscriber?   uint32
@@ -834,6 +832,8 @@ Internet-Draft             Yang Model for NAT              November 2017
                 |  +--ro dropped-fragments?               yang:zero-based-counter64 {napt44 or nat64}?
                 |  +--ro dropped-address-limit-packets?   yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
                 |  +--ro dropped-address-limit-bytes?     yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
+                |  +--ro dropped-address-packets?         yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
+                |  +--ro dropped-address-bytes?           yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
 
 
 
@@ -842,8 +842,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 15]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-                |  +--ro dropped-address-packets?         yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
-                |  +--ro dropped-address-bytes?           yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
                 |  +--ro dropped-port-limit-packets?      yang:zero-based-counter64 {napt44 or nat64}?
                 |  +--ro dropped-port-limit-bytes?        yang:zero-based-counter64 {napt44 or nat64}?
                 |  +--ro dropped-port-packets?            yang:zero-based-counter64 {napt44 or nat64}?
@@ -891,6 +889,8 @@ module ietf-nat {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-nat";
 
+  //namespace to be assigned by IANA
+
 
 
 Boucadair, et al.         Expires May 12, 2018                 [Page 16]
@@ -898,7 +898,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 16]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-  //namespace to be assigned by IANA
   prefix "nat";
 
   import ietf-inet-types { prefix inet; }
@@ -946,6 +945,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
      Redistribution and use in source and binary forms, with or
      without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License
 
 
 
@@ -954,7 +954,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 17]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-     to the license terms contained in, the Simplified BSD License
      set forth in Section 4.c of the IETF Trust's Legal Provisions
      Relating to IETF Documents
      (http://trustee.ietf.org/license-info).
@@ -1002,6 +1001,7 @@ Internet-Draft             Yang Model for NAT              November 2017
     reference
       "RFC 3022: Traditional IP Network Address Translator
                  (Traditional NAT)";
+  }
 
 
 
@@ -1009,8 +1009,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 18]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
-
-  }
 
  feature dst-nat {
     description
@@ -1058,6 +1056,8 @@ Internet-Draft             Yang Model for NAT              November 2017
                 Translation";
   }
 
+  feature nptv6 {
+    description
 
 
 
@@ -1066,8 +1066,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 19]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-  feature nptv6 {
-    description
       "NPTv6 is a stateless transport-agnostic IPv6-to-IPv6
        prefix translation.";
     reference
@@ -1114,6 +1112,8 @@ Internet-Draft             Yang Model for NAT              November 2017
     reference
       "RFC 6146: Stateful NAT64: Network Address and Protocol
                  Translation from IPv6 Clients to IPv4 Servers";
+  }
+
 
 
 
@@ -1121,8 +1121,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 20]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
-
-  }
 
   identity clat {
     base nat:nat-type;
@@ -1171,6 +1169,8 @@ Internet-Draft             Yang Model for NAT              November 2017
     leaf end-port-number {
       type inet:port-number;
 
+      must ". >= ../start-port-number"
+
 
 
 Boucadair, et al.         Expires May 12, 2018                 [Page 21]
@@ -1178,7 +1178,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 21]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-      must ". >= ../start-port-number"
         {
           error-message
             "The end-port-number must be greater than or
@@ -1226,6 +1225,7 @@ Internet-Draft             Yang Model for NAT              November 2017
         }
 
         leaf psid-len {
+          type uint8 {
 
 
 
@@ -1234,7 +1234,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 22]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-          type uint8 {
              range 0..15;
           }
           mandatory true;
@@ -1274,7 +1273,7 @@ Internet-Draft             Yang Model for NAT              November 2017
       type uint32;
       description
         "A unique identifier of a mapping entry. This identifier can be
-         automatically assigned by the NAT instance or be explicitely
+         automatically assigned by the NAT instance or be explicitly
          configured.";
     }
 
@@ -1282,6 +1281,7 @@ Internet-Draft             Yang Model for NAT              November 2017
       type enumeration {
         enum "static"  {
           description
+            "The mapping entry is explicitly configured
 
 
 
@@ -1290,7 +1290,6 @@ Boucadair, et al.         Expires May 12, 2018                 [Page 23]
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-            "The mapping entry is explicitly configured
              (e.g., via command-line interface).";
         }
 
@@ -1338,6 +1337,7 @@ Internet-Draft             Yang Model for NAT              November 2017
       description
         "Corresponds to the source port of the packet received
          on an internal interface.
+
 
 
 
@@ -1440,7 +1440,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
          Static mappings may not be associated with a
          lifetime. If no lifetime is associated with a
-         static mapping, an explicit action is requried to
+         static mapping, an explicit action is required to
          remove that mapping.";
     }
   }
@@ -1470,7 +1470,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
       description
         "A NAT instance. This identifier can be automatically assigned
-         or explicitely configured.";
+         or explicitly configured.";
 
       leaf id {
         type uint32;
@@ -1668,7 +1668,7 @@ Internet-Draft             Yang Model for NAT              November 2017
               description
                 "The NAT instance is able to translate fragments only if
                  they are received in order. That is, in particular the
-                 header is in the first packet. Fagements received
+                 header is in the first packet. Fagments received
                  out of order are droped. ";
             }
 
@@ -2783,7 +2783,7 @@ Internet-Draft             Yang Model for NAT              November 2017
               "Maximum number of subscribers that can be serviced
                by a NAT instance.
 
-               A subscriber is identifier by a given prefix.";
+               A subscriber is identified by a given prefix.";
              reference
                "RFC 7659: Definitions of Managed Objects for
                           Network Address Translators (NATs)";
@@ -2803,7 +2803,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
                When this limit is reached, packets that would
-               normaly trigger translation, will be droped.";
+               normaly trigger translation, will be dropped.";
              reference
                "RFC 7659: Definitions of Managed Objects
                           for Network Address Translators
@@ -2817,7 +2817,7 @@ Internet-Draft             Yang Model for NAT              November 2017
                by a NAT instance.
 
                When this limit is reached, packets that would
-               normaly trigger translation, will be droped.";
+               normaly trigger translation, will be dropped.";
              reference
                "RFC 7659: Definitions of Managed Objects for
                           Network Address Translators (NATs)";
@@ -3402,7 +3402,7 @@ Internet-Draft             Yang Model for NAT              November 2017
       type percent;
       mandatory true;
       description
-        "A treshhold (high-threshold or low-threshold) has
+        "A treshold (high-threshold or low-threshold) has
          been fired.";
     }
   }
@@ -3433,13 +3433,13 @@ Internet-Draft             Yang Model for NAT              November 2017
     leaf notify-addresses-threshold {
       type percent;
       description
-        "The notify-addresses-usage treshhold has been fired.";
+        "The notify-addresses-usage treshold has been fired.";
     }
 
     leaf notify-ports-threshold {
       type percent;
       description
-        "The notify-ports-usage treshhold has been fired.";
+        "The notify-ports-usage treshold has been fired.";
     }
   }
 }
@@ -3502,8 +3502,8 @@ Internet-Draft             Yang Model for NAT              November 2017
 
       *  /nat/instances/instance/notification-limits/notify-ports-usage
 
-   o  Set an arbitrarily high threshold, which may lead to disable
-      notifications:
+   o  Set an arbitrarily high threshold, which may lead to the
+      deactivation of notifications:
 
       *  /nat/instances/instance/policy/notify-pool-usage/high-threshold
 
