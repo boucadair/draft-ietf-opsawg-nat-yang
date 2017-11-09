@@ -5,14 +5,14 @@
 Network Working Group                                       M. Boucadair
 Internet-Draft                                                    Orange
 Intended status: Standards Track                            S. Sivakumar
-Expires: May 12, 2018                                      Cisco Systems
+Expires: May 13, 2018                                      Cisco Systems
                                                             C. Jacquenet
                                                                   Orange
                                                            S. Vinapamula
                                                         Juniper Networks
                                                                    Q. Wu
                                                                   Huawei
-                                                        November 8, 2017
+                                                        November 9, 2017
 
 
   A YANG Data Model for Network Address Translation (NAT) and Network
@@ -27,9 +27,10 @@ Abstract
    document defines a YANG module for the NAT function.
 
    NAT44, Network Address and Protocol Translation from IPv6 Clients to
-   IPv4 Servers (NAT64), Customer-side transLATor (CLAT), Explicit
-   Address Mappings for Stateless IP/ICMP Translation (SIIT EAM), and
-   IPv6 Network Prefix Translation (NPTv6) are covered in this document.
+   IPv4 Servers (NAT64), Customer-side transLATor (CLAT), Stateless IP/
+   ICMP Translation (SIIT), Explicit Address Mappings for Stateless IP/
+   ICMP Translation (SIIT EAM), and IPv6 Network Prefix Translation
+   (NPTv6) are covered in this document.
 
 Editorial Note (To be removed by RFC Editor)
 
@@ -48,16 +49,17 @@ Status of This Memo
    This Internet-Draft is submitted in full conformance with the
    provisions of BCP 78 and BCP 79.
 
-   Internet-Drafts are working documents of the Internet Engineering
-   Task Force (IETF).  Note that other groups may also distribute
 
 
 
-Boucadair, et al.         Expires May 12, 2018                  [Page 1]
+
+Boucadair, et al.         Expires May 13, 2018                  [Page 1]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
    working documents as Internet-Drafts.  The list of current Internet-
    Drafts is at https://datatracker.ietf.org/drafts/current/.
 
@@ -66,7 +68,7 @@ Internet-Draft             Yang Model for NAT              November 2017
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 12, 2018.
+   This Internet-Draft will expire on May 13, 2018.
 
 Copyright Notice
 
@@ -91,44 +93,45 @@ Table of Contents
    2.  Overview of the NAT YANG Data Model . . . . . . . . . . . . .   5
      2.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .   5
      2.2.  Various Translation Flavors . . . . . . . . . . . . . . .   6
-     2.3.  TCP, UDP and ICMP NAT Behavioral Requirements . . . . . .   7
-     2.4.  Other Transport Protocols . . . . . . . . . . . . . . . .   7
-     2.5.  IP Addresses Used for Translation . . . . . . . . . . . .   7
+     2.3.  TCP/UDP/ICMP NAT Behavioral Requirements  . . . . . . . .   8
+     2.4.  Other Transport Protocols . . . . . . . . . . . . . . . .   8
+     2.5.  IP Addresses Used for Translation . . . . . . . . . . . .   8
      2.6.  Port Set Assignment . . . . . . . . . . . . . . . . . . .   8
-     2.7.  Port-Restricted IP Addresses  . . . . . . . . . . . . . .   8
-     2.8.  NAT Mapping Entries . . . . . . . . . . . . . . . . . . .   8
-     2.9.  Resource Limits . . . . . . . . . . . . . . . . . . . . .  11
-     2.10. Binding the NAT Function to an External Interface . . . .  11
-     2.11. Relationship to NATV2-MIB . . . . . . . . . . . . . . . .  11
-     2.12. Tree Structure  . . . . . . . . . . . . . . . . . . . . .  12
-   3.  NAT YANG Module . . . . . . . . . . . . . . . . . . . . . . .  16
-   4.  Security Considerations . . . . . . . . . . . . . . . . . . .  62
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  64
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  64
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  64
+     2.7.  Port-Restricted IP Addresses  . . . . . . . . . . . . . .   9
+     2.8.  NAT Mapping Entries . . . . . . . . . . . . . . . . . . .   9
+     2.9.  Resource Limits . . . . . . . . . . . . . . . . . . . . .  12
+     2.10. Binding the NAT Function to an External Interface . . . .  15
+     2.11. Relationship to NATV2-MIB . . . . . . . . . . . . . . . .  15
+     2.12. Tree Structure  . . . . . . . . . . . . . . . . . . . . .  16
+   3.  NAT YANG Module . . . . . . . . . . . . . . . . . . . . . . .  20
+   4.  Security Considerations . . . . . . . . . . . . . . . . . . .  68
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  69
 
 
 
-Boucadair, et al.         Expires May 12, 2018                  [Page 2]
+Boucadair, et al.         Expires May 13, 2018                  [Page 2]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  64
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .  66
-   Appendix A.  Sample Examples  . . . . . . . . . . . . . . . . . .  68
-     A.1.  Traditional NAT44 . . . . . . . . . . . . . . . . . . . .  68
-     A.2.  CGN . . . . . . . . . . . . . . . . . . . . . . . . . . .  70
-     A.3.  CGN Pass-Through  . . . . . . . . . . . . . . . . . . . .  73
-     A.4.  NAT64 . . . . . . . . . . . . . . . . . . . . . . . . . .  74
-     A.5.  Explicit Address Mappings for Stateless IP/ICMP
-           Translation . . . . . . . . . . . . . . . . . . . . . . .  75
-     A.6.  Static Mappings with Port Ranges  . . . . . . . . . . . .  78
-     A.7.  Static Mappings with IP Prefixes  . . . . . . . . . . . .  78
-     A.8.  Destination NAT . . . . . . . . . . . . . . . . . . . . .  79
-     A.9.  CLAT  . . . . . . . . . . . . . . . . . . . . . . . . . .  82
-     A.10. NPTv6 . . . . . . . . . . . . . . . . . . . . . . . . . .  82
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  85
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  70
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  70
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  70
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  72
+   Appendix A.  Sample Examples  . . . . . . . . . . . . . . . . . .  74
+     A.1.  Traditional NAT44 . . . . . . . . . . . . . . . . . . . .  74
+     A.2.  Carrier Grade NAT (CGN) . . . . . . . . . . . . . . . . .  75
+     A.3.  CGN Pass-Through  . . . . . . . . . . . . . . . . . . . .  78
+     A.4.  NAT64 . . . . . . . . . . . . . . . . . . . . . . . . . .  79
+     A.5.  Stateless IP/ICMP Translation (SIIT)  . . . . . . . . . .  80
+     A.6.  Explicit Address Mappings for Stateless IP/ICMP
+           Translation (EAM SIIT)  . . . . . . . . . . . . . . . . .  80
+     A.7.  Static Mappings with Port Ranges  . . . . . . . . . . . .  84
+     A.8.  Static Mappings with IP Prefixes  . . . . . . . . . . . .  84
+     A.9.  Destination NAT . . . . . . . . . . . . . . . . . . . . .  85
+     A.10. Customer-side Translator (CLAT) . . . . . . . . . . . . .  88
+     A.11. IPv6 Network Prefix Translation (NPTv6) . . . . . . . . .  88
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  91
 
 1.  Introduction
 
@@ -143,10 +146,11 @@ Internet-Draft             Yang Model for NAT              November 2017
    instead.  This document covers both traditional NATs and CGNs.
 
    This document also covers NAT64 [RFC6146], customer-side translator
-   (CLAT) [RFC6877], Explicit Address Mappings for Stateless IP/ICMP
-   Translation (EAM) [RFC7757], and IPv6 Network Prefix Translation
-   (NPTv6) [RFC6296].  The full set of translation schemes that are in
-   scope is included in Section 2.2.
+   (CLAT) [RFC6877], Stateless IP/ICMP Translation (SIIT) [RFC7915],
+   Explicit Address Mappings for Stateless IP/ICMP Translation (EAM)
+   [RFC7757], and IPv6 Network Prefix Translation (NPTv6) [RFC6296].
+   The full set of translation schemes that are in scope is included in
+   Section 2.2.
 
    Sample examples are provided in Appendix A.  These examples are not
    intended to be exhaustive.
@@ -158,17 +162,18 @@ Internet-Draft             Yang Model for NAT              November 2017
    o  Basic NAT44: translation is limited to IP addresses alone
       (Section 2.1 of [RFC3022]).
 
+
+
+
+Boucadair, et al.         Expires May 13, 2018                  [Page 3]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
    o  Network Address/Port Translator (NAPT): translation in NAPT is
       extended to include IP addresses and transport identifiers (such
       as a TCP/UDP port or ICMP query ID); refer to Section 2.2 of
       [RFC3022].
-
-
-
-Boucadair, et al.         Expires May 12, 2018                  [Page 3]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
    o  Destination NAT: is a translation that acts on the destination IP
       address and/or destination port number.  This flavor is usually
@@ -210,21 +215,19 @@ Internet-Draft             Yang Model for NAT              November 2017
       This mapping is likely to be maintained by the NAT function till
       an explicit action is executed to remove it.
 
-   The usage of the term NAT in this document refers to any NAT flavor
-   (NAT44, NAT64, etc.) indifferently.
-
-   This document uses the term "session" as defined in [RFC2663] and
-   [RFC6146] for NAT64.
+   The usage of the term NAT in this document refers to any translation
+   flavor (NAT44, NAT64, etc.) indifferently.
 
 
 
 
-
-
-Boucadair, et al.         Expires May 12, 2018                  [Page 4]
+Boucadair, et al.         Expires May 13, 2018                  [Page 4]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
+
+   This document uses the term "session" as defined in [RFC2663] and
+   [RFC6146] for NAT64.
 
 1.2.  Tree Diagrams
 
@@ -256,7 +259,10 @@ Internet-Draft             Yang Model for NAT              November 2017
    dynamic explicit mappings is defined in separate documents such as
    [I-D.boucadair-pcp-yang].  Considerations about instructing explicit
    dynamic means (e.g., [RFC6887], [RFC6736], or [RFC8045]) are out of
-   scope.
+   scope.  As a reminder, REQ-9 of [RFC6888] requires that a CGN must
+   implement a protocol giving subscribers explicit control over NAT
+   mappings; that protocol should be the Port Control Protocol
+   [RFC6887].
 
    A single NAT device can have multiple NAT instances; each of these
    instances can be provided with its own policies (e.g., be responsible
@@ -268,19 +274,19 @@ Internet-Draft             Yang Model for NAT              November 2017
    disabled, be provisioned with a specific set of configuration data,
    and maintains its own mapping tables.
 
+
+
+
+Boucadair, et al.         Expires May 13, 2018                  [Page 5]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
    The NAT YANG module allows for a NAT instance to be provided with
    multiple NAT policies (/nat/instances/instance/policy).  The document
    does not make any assumption about how flows are associated with a
    given NAT policy of a given NAT instance.  Classification filters are
    out of scope.
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                  [Page 5]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
    Defining multiple NAT instances or configuring multiple NAT policies
    within one single NAT instance is implementation- and deployment-
@@ -298,57 +304,100 @@ Internet-Draft             Yang Model for NAT              November 2017
    o  NAPT
    o  Destination NAT
    o  Port-restricted NAT
-   o  Stateful and stateless NAT64
+   o  Stateful NAT64
+   o  SIIT
    o  CLAT
-   o  EAM SIIT
+   o  EAM
    o  NPTv6
    o  Combination of Basic NAT/NAPT and Destination NAT
    o  Combination of port-restricted and Destination NAT
    o  Combination of NAT64 and EAM
+   o  Stateful and Stateless NAT64
 
    [I-D.ietf-softwire-dslite-yang] specifies an extension to the NAT
    YANG module to support DS-Lite.
 
    The YANG "feature" statement is used to indicate which of the
-   different translation mode is relevant for a specific configuration.
-   The following features are defined:
+   different translation modes is relevant for a specific data node.
+   Table 1 lists defined features:
 
-   o  Basic NAT44 (basic-nat44)
-   o  NAPT (napt44)
-   o  Destination NAT (dst-nat)
-   o  NAT64 (nat64)
-   o  CLAT (clat)
-   o  EAM SIIT (eam)
-   o  NPTv6 (nptv6)
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                  [Page 6]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+            +---------------------------------+---------------+
+            |                Translation Mode | YANG Feature  |
+            +---------------------------------+---------------+
+            |                     Basic NAT44 | basic-nat44   |
+            |                            NAPT | napt44        |
+            |                 Destination NAT | dst-nat       |
+            |                  Stateful NAT64 | nat64         |
+            | Stateless IPv4/IPv6 translation | siit          |
+            |                            CLAT | clat          |
+            |                             EAM | eam           |
+            |                           NPTv6 | nptv6         |
+            +---------------------------------+---------------+
+
+                        Table 1: YANG NAT Features
 
    The following translation modes do not require defining dedicated
    features:
 
    o  Port-restricted NAT: This mode corresponds to supplying port
       restriction policies to a NAPT or NAT64 (port-set-restrict).
-   o  Stateless NAT64: This mode corresponds to setting 'stateless-
-      enable' parameter for a NAT64.
    o  Combination of Basic NAT/NAPT and Destination NAT: This mode
       corresponds to setting 'dst-nat-enable' for Basic NAT44 or NAPT.
-
-
-
-Boucadair, et al.         Expires May 12, 2018                  [Page 6]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
    o  Combination of port-restricted and Destination NAT: This mode can
       be achieved by configuring a NAPT with port restriction policies
       (port-set-restrict) together with a destination IP address pool
       (dst-ip-address-pool).
    o  Combination of NAT64 and EAM: This mode corresponds to configuring
       static mappings for NAT64.
+   o  Stateful and stateless NAT64: A NAT64 implementation can be
+      instructed to behave in the stateless mode for a given prefix by
+      setting the parameter (nat64-prefixes/stateless-enable).  A NAT64
+      implementation may behave in both stateful and stateless modes if,
+      in addition to appropriately setting the parameter (nat64-
+      prefixes/stateless-enable), an external IPv4 address pool is
+      configured.
 
-2.3.  TCP, UDP and ICMP NAT Behavioral Requirements
+   The NAT YANG module allows to retrieve the capabilities of a NAT
+   instance (including, list of supported translation modes, list of
+   supported protocols, port restriction support status, supported NAT
+   mapping types, supported NAT filtering types, port range allocation
+   support status, port parity preservation support status, port
+   preservation support status, the behavior for handling fragments
+   (all, out-of-order, in-order)).
 
-   This document assumes [RFC4787][RFC5382][RFC5508] are enabled by
-   default.
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                  [Page 7]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+2.3.  TCP/UDP/ICMP NAT Behavioral Requirements
+
+   This document assumes NAT behavioral recommendations for UDP
+   [RFC4787], TCP [RFC5382], and ICMP [RFC5508] are enabled by default.
 
    Furthermore, the NAT YANG module relies upon the recommendations
    detailed in [RFC6888] and [RFC7857].
@@ -379,29 +428,30 @@ Internet-Draft             Yang Model for NAT              November 2017
    function should not have any limitations on the size or the
    contiguity of the external address pool.  In particular, the NAT
    function must be configurable with contiguous or non-contiguous
-   external IPv4 address ranges.
+   external IPv4 address ranges.  To accommodate traditional NAT, the
+   module allows for a single IP address to be configured for external-
+   ip-address-pool.
 
    Likewise, one or multiple IP address pools may be configured for
    Destination NAT (dst-ip-address-pool).
-
-
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                  [Page 7]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
 2.6.  Port Set Assignment
 
    Port numbers can be assigned by a NAT individually (that is, a single
    port is assigned on a per session basis).  Nevertheless, this port
-   allocation scheme may not be optimal for logging purposes.
-   Therefore, a NAT function should be able to assign port sets (e.g.,
-   [RFC7753]) to optimize the volume of the logging data (REQ-14 of
-   [RFC6888]).  Both features are supported in the NAT YANG module.
+   allocation scheme may not be optimal for logging purposes (Section 12
+   of [RFC6269]).  Therefore, a NAT function should be able to assign
+   port sets (e.g., [RFC7753]) to optimize the volume of the logging
+
+
+
+Boucadair, et al.         Expires May 13, 2018                  [Page 8]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+   data (REQ-14 of [RFC6888]).  Both allocation schemes are supported in
+   the NAT YANG module.
 
    When port set assignment is activated (i.e., port-allocation-
    type==port-range-allocation), the NAT can be provided with the size
@@ -409,9 +459,9 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 2.7.  Port-Restricted IP Addresses
 
-   Some NATs require to restrict the port numbers (e.g., Lightweight
-   4over6 [RFC7596], MAP-E [RFC7597]).  Two schemes of port set
-   assignments (port-set-restrict) are supported in this document:
+   Some NATs require to restrict the source port numbers (e.g.,
+   Lightweight 4over6 [RFC7596], MAP-E [RFC7597]).  Two schemes of port
+   set assignments (port-set-restrict) are supported in this document:
 
    o  Simple port range: is defined by two port values, the start and
       the end of the port range [RFC8045].
@@ -435,6 +485,10 @@ Internet-Draft             Yang Model for NAT              November 2017
       identifier) <=> (external-src-address, external-dst-address,
       external ICMP/ICMPv6 identifier)
 
+   As a reminder, all the ICMP Query messages contain an 'Identifier'
+   field, which is referred to in this document as the 'ICMP
+   Identifier'.
+
    To cover TCP, UDP, and ICMP, the NAT YANG module assumes the
    following structure of a mapping entry:
 
@@ -442,16 +496,15 @@ Internet-Draft             Yang Model for NAT              November 2017
       may indicate whether a mapping is dynamically instantiated by a
       packet or statically configured.
 
+   transport-protocol:  Indicates the transport protocol (e.g., UDP,
+      TCP, ICMP) of a given mapping.
 
 
 
-Boucadair, et al.         Expires May 12, 2018                  [Page 8]
+Boucadair, et al.         Expires May 13, 2018                  [Page 9]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
-
-   transport-protocol:  Indicates the transport protocol (e.g., UDP,
-      TCP, ICMP) of a given mapping.
 
    internal-src-address:  Indicates the source IP address/prefix as used
       by an internal host.
@@ -487,54 +540,99 @@ Internet-Draft             Yang Model for NAT              November 2017
    For example, the mapping that will be created by a NAT64 upon receipt
    of a TCP SYN from source address 2001:db8:aaaa::1 and source port
    number 25636 to destination IP address 2001:db8:1234::198.51.100.1
-   and destination port number 8080 is characterized as follows:
-
-   o  type: dynamic implicit mapping.
-   o  transport-protocol: TCP (6)
-   o  internal-src-address: 2001:db8:aaaa::1
-   o  internal-src-port: 25636
-   o  external-src-address: T (an IPv4 address configured on the NAT64)
-   o  external-src-port: t (a port number that is chosen by the NAT64)
-   o  internal-dst-address: 2001:db8:1234::198.51.100.1
-   o  internal-dst-port: 8080
-   o  external-dst-address: 198.51.100.1
+   and destination port number 8080 is shown in Table 2.  This example
+   assumes EDM (Endpoint-Dependent Mapping).
 
 
 
-Boucadair, et al.         Expires May 12, 2018                  [Page 9]
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 10]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-   o  external-dst-port: 8080
+   +-----------------------+-------------------------------------------+
+   |         Mapping Entry | Value                                     |
+   |             Attribute |                                           |
+   +-----------------------+-------------------------------------------+
+   |                  type | dynamic implicit mapping                  |
+   |    transport-protocol | 6 (TCP)                                   |
+   |  internal-src-address | 2001:db8:aaaa::1                          |
+   |     internal-src-port | 25636                                     |
+   |  external-src-address | T (an IPv4 address configured on the      |
+   |                       | NAT64)                                    |
+   |     external-src-port | t (a port number that is chosen by the    |
+   |                       | NAT64)                                    |
+   |  internal-dst-address | 2001:db8:1234::198.51.100.1               |
+   |     internal-dst-port | 8080                                      |
+   |  external-dst-address | 198.51.100.1                              |
+   |     external-dst-port | 8080                                      |
+   +-----------------------+-------------------------------------------+
 
-   The mapping that will be created by a NAT44 upon receipt of an ICMP
+                 Table 2: Example of an EDM NAT64 Mapping
+
+   The mappings that will be created by a NAT44 upon receipt of an ICMP
    request from source address 198.51.100.1 and ICMP identifier (ID1) to
-   destination IP address 198.51.100.11 is characterized as follows:
+   destination IP address 198.51.100.11 is depicted in Table 3.  This
+   example assumes EIM (Endpoint-Independent Mapping).
 
-   o  type: dynamic implicit mapping.
-   o  transport-protocol: ICMP (1)
-   o  internal-src-address: 198.51.100.1
-   o  internal-src-port: ID1
-   o  external-src-address: T (an IPv4 address configured on the NAT44)
-   o  external-src-port: ID2 (an ICMP identifier that is chosen by the
-      NAT44)
-   o  internal-dst-address: 198.51.100.11
+   +----------------------+--------------------------------------------+
+   |        Mapping Entry | Value                                      |
+   |            Attribute |                                            |
+   +----------------------+--------------------------------------------+
+   |                 type | dynamic implicit mapping                   |
+   |   transport-protocol | 1 (ICMP)                                   |
+   | internal-src-address | 198.51.100.1                               |
+   |    internal-src-port | ID1                                        |
+   | external-src-address | T (an IPv4 address configured on the       |
+   |                      | NAT44)                                     |
+   |    external-src-port | ID2 (an ICMP identifier that is chosen by  |
+   |                      | the NAT44)                                 |
+   +----------------------+--------------------------------------------+
 
-   The mapping that will be created by a NAT64 upon receipt of an ICMP
-   request from source address 2001:db8:aaaa::1 and ICMP identifier
-   (ID1) to destination IP address 2001:db8:1234::198.51.100.1 is
-   characterized as follows:
+              Table 3: Example of an EIM NAT44 Mapping Entry
 
-   o  type: dynamic implicit mapping.
-   o  transport-protocol: ICMPv6 (58)
-   o  internal-src-address: 2001:db8:aaaa::1
-   o  internal-src-port: ID1
-   o  external-src-address: T (an IPv4 address configured on the NAT64)
-   o  external-src-port: ID2 (an ICMP identifier that is chosen by the
-      NAT64)
-   o  internal-dst-address: 2001:db8:1234::198.51.100.1
-   o  external-dst-address: 198.51.100.1
+   The mapping that will be created by a NAT64 (EIM mode) upon receipt
+   of an ICMP request from source address 2001:db8:aaaa::1 and ICMP
+   identifier (ID1) to destination IP address
+   2001:db8:1234::198.51.100.1 is shown in Table 4.
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 11]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+   +----------------------+--------------------------------------------+
+   |        Mapping Entry | Value                                      |
+   |            Attribute |                                            |
+   +----------------------+--------------------------------------------+
+   |                 type | dynamic implicit mapping                   |
+   |   transport-protocol | 58 (ICMPv6)                                |
+   | internal-src-address | 2001:db8:aaaa::1                           |
+   |    internal-src-port | ID1                                        |
+   | external-src-address | T (an IPv4 address configured on the       |
+   |                      | NAT64)                                     |
+   |    external-src-port | ID2 (an ICMP identifier that is chosen by  |
+   |                      | the NAT64)                                 |
+   +----------------------+--------------------------------------------+
+
+              Table 4: Example of an EIM NAT64 Mapping Entry
 
    Note that a mapping table is maintained only for stateful NAT
    functions.  Particularly:
@@ -548,26 +646,17 @@ Internet-Draft             Yang Model for NAT              November 2017
 
    o  No per-flow mapping is maintained for EAM [RFC7757].
 
-   o  No mapping table is maintained for stateless NAT64.  As a
-      reminder, in such deployments internal IPv6 nodes are addressed
-      using IPv4-translatable IPv6 addresses, which enable them to be
-      accessed by IPv4 nodes [RFC6052].
-
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 10]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
+   o  No mapping table is maintained for Stateless IPv4/IPv6
+      translation.  As a reminder, in such deployments internal IPv6
+      nodes are addressed using IPv4-translatable IPv6 addresses, which
+      enable them to be accessed by IPv4 nodes [RFC6052].
 
 2.9.  Resource Limits
 
    In order to comply with CGN deployments in particular, the NAT YANG
    module allows limiting the number of external ports per subscriber
    (port-quota) and the amount of state memory allocated per mapping and
-   per subscriber (mapping-limit and connection-limit).  According to
+   per subscriber (mapping-limits and connection-limits).  According to
    [RFC6888], the model allows for the following:
 
    o  Per-subscriber limits are configurable by the NAT administrator.
@@ -577,8 +666,141 @@ Internet-Draft             Yang Model for NAT              November 2017
 
    o  Administrator-adjustable thresholds to prevent a single subscriber
       from consuming excessive CPU resources from the NAT (e.g., rate-
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 12]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
       limit the subscriber's creation of new mappings) can be
       configured.
+
+   Table 5 lists the various limits that can be set using the NAT YANG
+   module.  Once a limit is reached, packets that would normally trigger
+   new port mappings or be translated because they match existing
+   mappings, are dropped by the translator.
+
+   +-------------------+-----------------------------------------------+
+   | Limit             | Description                                   |
+   +-------------------+-----------------------------------------------+
+   | port-quota        | Specifies a port quota to be assigned per     |
+   |                   | subscriber. It corresponds to the maximum     |
+   |                   | number of ports to be used by a subscriber.   |
+   |                   | The port quota can be configured to apply to  |
+   |                   | all protocols or to a specific protocol.      |
+   |                   | Distinct port quota may be configured per     |
+   |                   | protocol.                                     |
+   +-------------------+-----------------------------------------------+
+   | fragments-limit   | In order to prevent denial of service attacks |
+   |                   | that can be caused by fragments, this         |
+   |                   | parameter is used to limit the number of out- |
+   |                   | of-order fragments that can be handled by a   |
+   |                   | translator.                                   |
+   +-------------------+-----------------------------------------------+
+   | mapping-limits    | This parameter can be used to control the     |
+   |                   | maximum number of subscribers that can be     |
+   |                   | serviced by a NAT instance (limit-subscriber) |
+   |                   | and the maximum number of address and/or port |
+   |                   | mappings that can be maintained by a NAT      |
+   |                   | instance (limit-address-mapings and limit-    |
+   |                   | port-mappings). Also, limits specific to      |
+   |                   | protocols (e.g., TCP, UDP, ICMP) can also be  |
+   |                   | specified (limit-per-protocol).               |
+   +-------------------+-----------------------------------------------+
+   | connection-limits | In order to prevent exhausting the resources  |
+   |                   | of a NAT implementation and to ensure         |
+   |                   | fairness usage among subscribers, various     |
+   |                   | rate-limits can be specified. Rate-limiting   |
+   |                   | can be enforced per subscriber ((limit-       |
+   |                   | subscriber), per NAT instance (limit-per-     |
+   |                   | instance), and/or be specified for each       |
+   |                   | supported protocol (limit-per-protocol).      |
+   +-------------------+-----------------------------------------------+
+
+                            Table 5: NAT Limits
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 13]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+   Table 6 describes limits, that once exceeded, will trigger
+   notifications to be generated:
+
+   +------------------------+------------------------------------------+
+   | Notification Threshold | Description                              |
+   +------------------------+------------------------------------------+
+   | high-threshold         | Used to notify high address utilization  |
+   |                        | of a given pool. When exceeded, a nat-   |
+   |                        | pool-event notification will be          |
+   |                        | generated.                               |
+   +------------------------+------------------------------------------+
+   | low-threshold          | Used to notify low address utilization   |
+   |                        | of a given pool. An administrator is     |
+   |                        | supposed to configure low-threshold so   |
+   |                        | that it can reflect an abnormal usage of |
+   |                        | NAT resources. When exceeded, a nat-     |
+   |                        | pool-event notification will be          |
+   |                        | generated.                               |
+   +------------------------+------------------------------------------+
+   | notify-addresses-usage | Used to notify high address utilization  |
+   |                        | of all pools configured to a NAT         |
+   |                        | instance. When exceeded, a nat-instance- |
+   |                        | event will be generated.                 |
+   +------------------------+------------------------------------------+
+   | notify-ports-usage     | Used to notify high port allocation      |
+   |                        | taking into account all pools configured |
+   |                        | to a NAT instance. When exceeded, a nat- |
+   |                        | instance-event notification will be      |
+   |                        | generated.                               |
+   +------------------------+------------------------------------------+
+
+                     Table 6: Notification Thresholds
+
+   In order to prevent from generating frequent notifications, the NAT
+   YANG module supports the following limits (Table 7) used to control
+   how frequent notifications can be generated.  That is, notifications
+   are subject to rate-limiting imposed by these intervals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 14]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+   +-------------------------------------+-----------------------------+
+   | Interval                            | Description                 |
+   +-------------------------------------+-----------------------------+
+   | notify-pool-usage/notify-interval   | Indicates the minimum       |
+   |                                     | number of seconds between   |
+   |                                     | successive notifications    |
+   |                                     | for a given address pool.   |
+   +-------------------------------------+-----------------------------+
+   | notification-limits/notify-interval | Indicates the minimum       |
+   |                                     | number of seconds between   |
+   |                                     | successive notifications    |
+   |                                     | for a NAT instance.         |
+   +-------------------------------------+-----------------------------+
+
+                      Table 7: Notification Intervals
 
 2.10.  Binding the NAT Function to an External Interface
 
@@ -609,17 +831,16 @@ Internet-Draft             Yang Model for NAT              November 2017
       policies regarding address pool selection in the various possible
       address realms to which the subscriber may connect.
 
+   o  The set of NAT instances running on the device, identified by NAT
+      instance index and name.
 
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 11]
+Boucadair, et al.         Expires May 13, 2018                 [Page 15]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
-
-   o  The set of NAT instances running on the device, identified by NAT
-      instance index and name.
 
    o  The port mapping, filtering, pooling, and fragment behavior for
       each NAT instance.
@@ -650,6 +871,9 @@ module: ietf-nat
              +--rw enable?                boolean
              +--ro capabilities
              |  +--ro nat-flavor*                                   identityref
+             |  +--ro transport-protocols* [protocol-id]
+             |  |  +--ro protocol-id      uint8
+             |  |  +--ro protocol-name?   string
              |  +--ro restricted-port-support?                      boolean
              |  +--ro static-mapping-support?                       boolean
              |  +--ro port-randomization-support?                   boolean
@@ -669,7 +893,7 @@ module: ietf-nat
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 12]
+Boucadair, et al.         Expires May 13, 2018                 [Page 16]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -690,7 +914,7 @@ Internet-Draft             Yang Model for NAT              November 2017
              |  +--rw eam* [ipv4-prefix] {eam}?
              |  |  +--rw ipv4-prefix    inet:ipv4-prefix
              |  |  +--rw ipv6-prefix    inet:ipv6-prefix
-             |  +--rw nat64-prefixes* [nat64-prefix] {nat64 or clat}?
+             |  +--rw nat64-prefixes* [nat64-prefix] {siit or nat64 or clat}?
              |  |  +--rw nat64-prefix               inet:ipv6-prefix
              |  |  +--rw destination-ipv4-prefix* [ipv4-prefix]
              |  |  |  +--rw ipv4-prefix    inet:ipv4-prefix
@@ -725,7 +949,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 13]
+Boucadair, et al.         Expires May 13, 2018                 [Page 17]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -751,7 +975,7 @@ Internet-Draft             Yang Model for NAT              November 2017
              |  |  |  +--rw timeout        uint32
              |  |  +--rw hold-down-timeout?         uint32
              |  |  +--rw hold-down-max?             uint32
-             |  +--rw fragment-limit?             uint32
+             |  +--rw fragments-limit?            uint32
              |  +--rw algs* [name]
              |  |  +--rw name                  string
              |  |  +--rw transport-protocol?   uint32
@@ -772,7 +996,7 @@ Internet-Draft             Yang Model for NAT              November 2017
              |     +--rw (realm-type)?
              |        +--:(interface)
              |           +--rw external-interface?   if:interface-ref
-             +--rw mapping-limit {napt44 or nat64}?
+             +--rw mapping-limits {napt44 or nat64}?
              |  +--rw limit-subscribers?       uint32
              |  +--rw limit-address-mapings?   uint32
              |  +--rw limit-port-mappings?     uint32
@@ -781,13 +1005,13 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 14]
+Boucadair, et al.         Expires May 13, 2018                 [Page 18]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
              |     +--rw limit?         uint32
-             +--rw connection-limit {basic-nat44 or napt44 or nat64}?
+             +--rw connection-limits {basic-nat44 or napt44 or nat64}?
              |  +--rw limit-per-subscriber?   uint32
              |  +--rw limit-per-instance      uint32
              |  +--rw limit-per-protocol* [protocol-id] {napt44 or nat64}?
@@ -821,7 +1045,7 @@ Internet-Draft             Yang Model for NAT              November 2017
              |     |  +--rw end-port-number?     inet:port-number
              |     +--rw lifetime?               uint32
              +--ro statistics
-                +--ro discontinuity-time    yang:date-and-time
+                +--ro discontinuity-time     yang:date-and-time
                 +--ro traffic-statistics
                 |  +--ro sent-packets?                    yang:zero-based-counter64
                 |  +--ro sent-bytes?                      yang:zero-based-counter64
@@ -837,7 +1061,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 15]
+Boucadair, et al.         Expires May 13, 2018                 [Page 19]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -848,12 +1072,12 @@ Internet-Draft             Yang Model for NAT              November 2017
                 |  +--ro dropped-port-bytes?              yang:zero-based-counter64 {napt44 or nat64}?
                 |  +--ro dropped-subscriber-packets?      yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
                 |  +--ro dropped-subscriber-bytes?        yang:zero-based-counter64 {basic-nat44 or napt44 or nat64}?
-                +--ro mapping-statistics
+                +--ro mappings-statistics
                 |  +--ro total-address-mappings?   yang:gauge32 {basic-nat44 or napt44 or nat64 or clat or dst-nat}?
                 |  +--ro total-port-mappings?      yang:gauge32 {napt44 or nat64}?
-                |  +--ro total-tcp-mappings?       yang:gauge32 {napt44 or nat64}?
-                |  +--ro total-udp-mappings?       yang:gauge32 {napt44 or nat64}?
-                |  +--ro total-icmp-mappings?      yang:gauge32 {napt44 or nat64}?
+                |  +--ro total-per-protocol* [protocol-id] {napt44 or nat64}?
+                |     +--ro protocol-id    uint8
+                |     +--ro total?         yang:gauge32
                 +--ro pools-stats {basic-nat44 or napt44 or nat64}?
                    +--ro addresses-allocated?   yang:gauge32
                    +--ro addresses-free?        yang:gauge32
@@ -893,7 +1117,7 @@ module ietf-nat {
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 16]
+Boucadair, et al.         Expires May 13, 2018                 [Page 20]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -949,7 +1173,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 17]
+Boucadair, et al.         Expires May 13, 2018                 [Page 21]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -1005,7 +1229,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 18]
+Boucadair, et al.         Expires May 13, 2018                 [Page 22]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -1029,19 +1253,44 @@ Internet-Draft             Yang Model for NAT              November 2017
                  Translation from IPv6 Clients to IPv4 Servers";
   }
 
+  feature siit {
+    description
+      "The Stateless IP/ICMP Translation Algorithm (SIIT), which
+       translates between IPv4 and IPv6 packet headers (including
+       ICMP headers).
+
+       In the stateless mode, an IP/ICMP translator converts IPv4
+       addresses to IPv6 and vice versa solely based on the
+       configuration of the stateless IP/ICMP translator and
+       information contained within the packet being translated.
+
+       The translator must support the stateless address mapping
+       algorithm defined in RFC6052, which is the default behavior.";
+    reference
+      "RFC 7915: IP/ICMP Translation Algorithm";
+  }
+
   feature clat {
     description
       "CLAT is customer-side translator that algorithmically
        translates 1:1 private IPv4 addresses to global IPv6 addresses,
        and vice versa.
 
-       When a dedicated /64 prefix is not available for translation from
-       DHCPv6-PD, the CLAT may perform NAT44 for all IPv4 LAN packets so
-       that all the LAN-originated IPv4 packets appear from a single
-       IPv4 address and are then statelessly translated to one interface
-       IPv6 address that is claimed by the CLAT via the Neighbor
-       Discovery Protocol (NDP) and defended with Duplicate Address
-       Detection.";
+       When a dedicated /64 prefix is not available for translation
+       from DHCPv6-PD, the CLAT may perform NAT44 for all IPv4 LAN
+       packets so that all the LAN-originated IPv4 packets appear
+       from a single IPv4 address and are then statelessly translated
+       to one interface IPv6 address that is claimed by the CLAT via
+       the Neighbor Discovery Protocol (NDP) and defended with
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 23]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+       Duplicate Address Detection.";
     reference
       "RFC 6877: 464XLAT: Combination of Stateful and Stateless
                  Translation";
@@ -1049,8 +1298,8 @@ Internet-Draft             Yang Model for NAT              November 2017
 
   feature eam {
     description
-      "Explicit Address Mapping (EAM) is a bidirectional coupling between
-       an IPv4 address and an IPv6 address.";
+      "Explicit Address Mapping (EAM) is a bidirectional coupling
+       between an IPv4 Prefix and an IPv6 Prefix.";
     reference
      "RFC 7757: Explicit Address Mappings for Stateless IP/ICMP
                 Translation";
@@ -1058,14 +1307,6 @@ Internet-Draft             Yang Model for NAT              November 2017
 
   feature nptv6 {
     description
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 19]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
       "NPTv6 is a stateless transport-agnostic IPv6-to-IPv6
        prefix translation.";
     reference
@@ -1097,6 +1338,14 @@ Internet-Draft             Yang Model for NAT              November 2017
     reference
       "RFC 3022: Traditional IP Network Address Translator
                  (Traditional NAT)";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 24]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
   }
 
   identity dst-nat {
@@ -1114,13 +1363,13 @@ Internet-Draft             Yang Model for NAT              November 2017
                  Translation from IPv6 Clients to IPv4 Servers";
   }
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 20]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
+  identity siit {
+    base nat:nat-type;
+    description
+      "Identity for SIIT support.";
+    reference
+      "RFC 7915: IP/ICMP Translation Algorithm";
+  }
 
   identity clat {
     base nat:nat-type;
@@ -1145,6 +1394,14 @@ Internet-Draft             Yang Model for NAT              November 2017
     description
       "Identity for NPTv6 support.";
     reference
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 25]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
       "RFC 6296: IPv6-to-IPv6 Network Prefix Translation";
   }
 
@@ -1170,14 +1427,6 @@ Internet-Draft             Yang Model for NAT              November 2017
       type inet:port-number;
 
       must ". >= ../start-port-number"
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 21]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
         {
           error-message
             "The end-port-number must be greater than or
@@ -1201,6 +1450,14 @@ Internet-Draft             Yang Model for NAT              November 2017
     choice port-type {
       default port-range;
       description
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 26]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
         "Port type: port-range or port-set-algo.";
       case port-range {
          uses port-number;
@@ -1226,14 +1483,6 @@ Internet-Draft             Yang Model for NAT              November 2017
 
         leaf psid-len {
           type uint8 {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 22]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
              range 0..15;
           }
           mandatory true;
@@ -1257,6 +1506,14 @@ Internet-Draft             Yang Model for NAT              November 2017
              identifies a set of ports algorithmically.";
           reference
             "Section 5.1 of RFC 7597";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 27]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
         }
       }
       reference
@@ -1267,7 +1524,12 @@ Internet-Draft             Yang Model for NAT              November 2017
 
   grouping mapping-entry {
     description
-      "NAT mapping entry.";
+      "NAT mapping entry.
+
+       If an attribute is not stored in the mapping/session table,
+       this means the corresponding fields of a packet that
+       matches this entry is not rewritten by the NAT or this
+       information is not required for NAT filtering purposes.";
 
     leaf index {
       type uint32;
@@ -1282,20 +1544,12 @@ Internet-Draft             Yang Model for NAT              November 2017
         enum "static"  {
           description
             "The mapping entry is explicitly configured
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 23]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
              (e.g., via command-line interface).";
         }
 
         enum "dynamic-implicit" {
           description
-            "This mapping is created implicitely as a side effect
+            "This mapping is created implicitly as a side effect
              of processing a packet that requires a new mapping.";
 
         }
@@ -1308,6 +1562,14 @@ Internet-Draft             Yang Model for NAT              November 2017
         }
       }
         description
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 28]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           "Indicates the type of a mapping entry. E.g.,
            a mapping can be: static, implicit dynamic
            or explicit dynamic.";
@@ -1338,14 +1600,6 @@ Internet-Draft             Yang Model for NAT              November 2017
         "Corresponds to the source port of the packet received
          on an internal interface.
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 24]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
          It is used also to indicate the internal source ICMP
          identifier.
 
@@ -1364,9 +1618,17 @@ Internet-Draft             Yang Model for NAT              November 2017
     }
 
     container external-src-port {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 29]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
       description
-        "Source port of the packet sent on an external interafce
-         of the NAT.
+        "Source port of the packet sent on an external
+         interface of the NAT.
 
          It is used also to indicate the external source ICMP
          identifier.";
@@ -1395,13 +1657,6 @@ Internet-Draft             Yang Model for NAT              November 2017
          It is used also to include the internal
          destination ICMP identifier.";
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 25]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
       uses port-number;
     }
 
@@ -1418,6 +1673,14 @@ Internet-Draft             Yang Model for NAT              November 2017
         "Corresponds to the destination port number of
          the packet sent on the external interface
          of the NAT.
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 30]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
          It is used also to include the external
          destination ICMP identifier.";
@@ -1450,14 +1713,6 @@ Internet-Draft             Yang Model for NAT              November 2017
   */
 
   container nat {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 26]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
     description
       "NAT module";
 
@@ -1475,6 +1730,14 @@ Internet-Draft             Yang Model for NAT              November 2017
       leaf id {
         type uint32;
         must ". >= 1";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 31]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
         description
           "NAT instance identifier.
 
@@ -1506,19 +1769,53 @@ Internet-Draft             Yang Model for NAT              November 2017
           "NAT capabilities";
 
         leaf-list nat-flavor {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 27]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
           type identityref {
             base nat-type;
           }
           description
             "Type of NAT.";
+        }
+
+        list transport-protocols {
+          key protocol-id;
+
+          description
+            "List of supported protocols.";
+
+          leaf protocol-id {
+            type uint8;
+            mandatory true;
+            description
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 32]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+              "Upper-layer protocol associated with this mapping.
+
+               Values are taken from the IANA protocol registry:
+               https://www.iana.org/assignments/protocol-numbers/
+               protocol-numbers.xhtml
+
+               For example, this field contains 6 (TCP) for a TCP
+               mapping or 17 (UDP) for a UDP mapping.";
+          }
+
+          leaf protocol-name {
+            type string;
+            description
+              "The name of the Upper-layer protocol associated
+               with this mapping.
+
+               Values are taken from the IANA protocol registry:
+               https://www.iana.org/assignments/protocol-numbers/
+               protocol-numbers.xhtml
+
+               For example, TCP, UDP, DCCP, and SCTP.";
+          }
         }
 
         leaf restricted-port-support {
@@ -1545,6 +1842,14 @@ Internet-Draft             Yang Model for NAT              November 2017
         }
 
         leaf port-range-allocation-support {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 33]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           type boolean;
           description
             "Indicates whether port range allocation is supported.";
@@ -1562,14 +1867,6 @@ Internet-Draft             Yang Model for NAT              November 2017
 
         leaf port-parity-preservation-support {
           type boolean;
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 28]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
           description
             "Indicates whether port parity preservation is
              supported.";
@@ -1601,6 +1898,14 @@ Internet-Draft             Yang Model for NAT              November 2017
              supported.";
            reference
              "Section 4 of RFC 4787.";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 34]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
         }
 
         leaf address-dependent-mapping-support {
@@ -1618,14 +1923,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             "Indicates whether address-and-port-dependent-mapping is
              supported.";
            reference
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 29]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
              "Section 4 of RFC 4787.";
         }
 
@@ -1657,8 +1954,16 @@ Internet-Draft             Yang Model for NAT              November 2017
         }
 
         leaf fragment-behavior {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 35]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           type enumeration {
-            enum "unssupported"  {
+            enum "unsupported"  {
               description
                 "No capability to translate incoming fragments.
                  All received fragments are dropped.";
@@ -1668,20 +1973,12 @@ Internet-Draft             Yang Model for NAT              November 2017
               description
                 "The NAT instance is able to translate fragments only if
                  they are received in order. That is, in particular the
-                 header is in the first packet. Fagments received
-                 out of order are droped. ";
+                 header is in the first packet. Fragments received
+                 out of order are dropped. ";
             }
 
             enum "out-of-order"  {
               description
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 30]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                 "The NAT instance is able to translate a fragment even
                  if it is received out of order.
 
@@ -1713,6 +2010,14 @@ Internet-Draft             Yang Model for NAT              November 2017
 
         leaf prefix {
           type inet:ip-prefix;
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 36]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           mandatory true;
           description
             "The IP addresses that match should not be translated.
@@ -1731,13 +2036,6 @@ Internet-Draft             Yang Model for NAT              November 2017
              administratively turn off translation for specific
              destination addresses and/or ports.
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 31]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
              If no prefix is defined, the NAT pass through bound
              to a given port applies for any destination address.";
 
@@ -1754,7 +2052,8 @@ Internet-Draft             Yang Model for NAT              November 2017
        leaf id {
          type uint32;
          description
-           "An identifier of the NAT policy.";
+           "An identifier of the NAT policy.
+            it must be unique within the NAT instance.";
        }
 
        container clat-parameters {
@@ -1767,6 +2066,14 @@ Internet-Draft             Yang Model for NAT              November 2017
            description
              "464XLAT double translation treatment is stateless when a
               dedicated /64 is available for translation on the CLAT.
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 37]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               Otherwise, the CLAT will have both stateful and stateless
               since it requires NAT44 from the LAN to a single IPv4
               address and then stateless translation to a single
@@ -1786,14 +2093,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             key ipv4-prefix;
             description
               "Pool of IPv4 addresses used for CLAT.
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 32]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                192.0.0.0/29 is the IPv4 service continuity prefix.";
             reference
               "RFC 7335: IPv4 Service Continuity Prefix";
@@ -1823,6 +2122,14 @@ Internet-Draft             Yang Model for NAT              November 2017
                "RFC 6877: 464XLAT: Combination of Stateful and Stateless
                           Translation";
            }
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 38]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
          }
        }
 
@@ -1841,14 +2148,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             Internet.";
           reference
             "RFC 6296: IPv6-to-IPv6 Network Prefix Translation";
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 33]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
           leaf internal-ipv6-prefix {
             type inet:ipv6-prefix;
@@ -1879,6 +2178,14 @@ Internet-Draft             Yang Model for NAT              November 2017
             Each EAM describes a mapping between IPv4 and IPv6
             prefixes/addresses.";
          reference
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 39]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
            "Section 3.1 of RFC 7757.";
 
          leaf ipv4-prefix {
@@ -1898,18 +2205,10 @@ Internet-Draft             Yang Model for NAT              November 2017
            reference
              "Section 3.2 of RFC 7757.";
          }
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 34]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
        }
 
        list nat64-prefixes {
-         if-feature "nat64 or clat";
+         if-feature "siit or nat64 or clat";
          key nat64-prefix;
          description
            "Provides one or a list of NAT64 prefixes
@@ -1935,6 +2234,14 @@ Internet-Draft             Yang Model for NAT              November 2017
 
               For stateless NAT64, IPv4-translatable IPv6 addresses
               must use the selected Network-Specific Prefix.
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 40]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               Both IPv4-translatable IPv6 addresses and IPv4-converted
               IPv6 addresses should use the same prefix.";
            reference
@@ -1954,18 +2261,10 @@ Internet-Draft             Yang Model for NAT              November 2017
           }
 
           leaf stateless-enable {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 35]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
             type boolean;
             default false;
             description
-              "Enable explicitly statless NAT64.";
+              "Enable explicitly stateless NAT64.";
          }
        }
 
@@ -1991,6 +2290,14 @@ Internet-Draft             Yang Model for NAT              November 2017
            reference
              "RFC 7659: Definitions of Managed Objects for
                         Network Address Translators (NATs)";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 41]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
          }
 
          leaf external-ip-pool {
@@ -2010,14 +2317,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             port numbers used by the translator.";
 
          uses port-set;
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 36]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
        }
 
        leaf dst-nat-enable {
@@ -2047,6 +2346,14 @@ Internet-Draft             Yang Model for NAT              November 2017
             type inet:ip-prefix;
             description
               "Is used to identify an internal IP prefix/address
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 42]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
                to be translated.";
           }
 
@@ -2066,14 +2373,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             "Configure the transport protocols to be handled by
              the translator.
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 37]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
              TCP and UDP are supported by default.";
 
           leaf protocol-id {
@@ -2083,7 +2382,8 @@ Internet-Draft             Yang Model for NAT              November 2017
               "Upper-layer protocol associated with this mapping.
 
                Values are taken from the IANA protocol registry:
-               https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+               https://www.iana.org/assignments/protocol-numbers/
+               protocol-numbers.xhtml
 
                For example, this field contains 6 (TCP) for a TCP
                mapping or 17 (UDP) for a UDP mapping.";
@@ -2096,11 +2396,19 @@ Internet-Draft             Yang Model for NAT              November 2017
                with this mapping.
 
                Values are taken from the IANA protocol registry:
-               https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+               https://www.iana.org/assignments/protocol-numbers/
+               protocol-numbers.xhtml
 
                For example, TCP, UDP, DCCP, and SCTP.";
           }
         }
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 43]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
         leaf subscriber-mask-v6 {
           type uint8 {
@@ -2122,14 +2430,6 @@ Internet-Draft             Yang Model for NAT              November 2017
              prefix.
 
              Example: suppose the 2001:db8:100:100::/56 prefix
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 38]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
              is assigned to a NAT64 serviced CPE. Suppose also
              that 2001:db8:100:100::1 is the IPv6 address used
              by the client that resides in that CPE. When the
@@ -2148,7 +2448,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
           description
             "IP prefix match.
-             A subsciber is identified by a subnet.";
+             A subscriber is identified by a subnet.";
 
           leaf match-id {
             type uint32;
@@ -2158,6 +2458,14 @@ Internet-Draft             Yang Model for NAT              November 2017
 
           leaf subnet {
             type inet:ip-prefix;
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 44]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
             mandatory true;
             description
               "The IP address subnets that match
@@ -2172,20 +2480,13 @@ Internet-Draft             Yang Model for NAT              November 2017
             enum "arbitrary"  {
               if-feature "basic-nat44 or napt44 or nat64";
               description
-                "Arbitrary pooling behavior means that the NAT instance
-                 may create the new port mapping using any address in the
-                 pool that has a free port for the protocol concerned.";
+                "Arbitrary pooling behavior means that the NAT
+                 instance may create the new port mapping using any
+                 address in the pool that has a free port for the
+                 protocol concerned.";
             }
 
             enum "roundrobin"  {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 39]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
               if-feature "basic-nat44 or napt44 or nat64";
               description
                 "Round robin allocation.";
@@ -2200,8 +2501,8 @@ Internet-Draft             Yang Model for NAT              November 2017
                  address. This is the recommended behavior for
                  NAPT/NAT64.";
               reference
-                "RFC 4787: Network Address Translation (NAT) Behavioral
-                           Requirements for Unicast UDP";
+                "RFC 4787: Network Address Translation (NAT)
+                           Behavioral Requirements for Unicast UDP";
             }
           }
           description
@@ -2213,9 +2514,17 @@ Internet-Draft             Yang Model for NAT              November 2017
           type enumeration {
             enum "random"  {
               description
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 45]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
                 "Port randomization is enabled. A NAT port allocation
-                 scheme should make it hard for attackers to guess port
-                  numbers";
+                 scheme should make it hard for attackers to guess
+                 port numbers";
               reference
                 "REQ-15 of RFC 6888";
             }
@@ -2234,16 +2543,8 @@ Internet-Draft             Yang Model for NAT              November 2017
 
             enum "port-range-allocation"  {
               description
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 40]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
-                "Indicates whether the NAT assigns a range of ports for
-                 an internal host. This scheme allows to minimize
+                "Indicates whether the NAT assigns a range of ports
+                 for an internal host. This scheme allows to minimize
                  log volume.";
               reference
                 "REQ-14 of RFC 6888";
@@ -2270,6 +2571,13 @@ Internet-Draft             Yang Model for NAT              November 2017
                 "Section 4 of RFC 4787.";
             }
 
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 46]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
             enum "edm"  {
               description
                 "address-and-port-dependent-mapping.";
@@ -2290,13 +2598,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               reference
                 "Section 5 of RFC 4787.";
             }
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 41]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
             enum "adf"  {
               description
@@ -2325,13 +2626,23 @@ Internet-Draft             Yang Model for NAT              November 2017
             }
 
             enum "in-order"  {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 47]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               description
-                "Translate fragments only if they are received in order.";
+                "Translate fragments only if they are received
+                 in order.";
             }
 
             enum "out-of-order"  {
               description
-                "Translate a fragment even if it is received out of order.
+                "Translate a fragment even if it is received out
+                 of order.
 
                  This behavior is the recommended behavior.";
               reference
@@ -2339,21 +2650,13 @@ Internet-Draft             Yang Model for NAT              November 2017
              }
            }
            description
-             "The fragment behavior instructs the NAT about the behavior
-              to follow to translate fragments received on the external
-              interface of the NAT.";
+             "The fragment behavior instructs the NAT about the
+              behavior to follow to translate fragments received
+              on the external interface of the NAT.";
           }
 
         list port-quota {
           if-feature "napt44 or nat64";
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 42]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
           key quota-type;
           description
             "Configures a port quota to be assigned per subscriber.
@@ -2380,6 +2683,13 @@ Internet-Draft             Yang Model for NAT              November 2017
 
         container port-set {
 
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 48]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           when "../port-allocation-type = 'port-range-allocation'";
 
           if-feature "napt44 or nat64";
@@ -2397,19 +2707,11 @@ Internet-Draft             Yang Model for NAT              November 2017
             type uint32;
             units "seconds";
             description
-              "Inactivty timeout for port sets.";
+              "inactivity timeout for port sets.";
           }
         }
 
         container timers {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 43]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
           if-feature "napt44 or nat64";
           description
             "Configure values of various timeouts.";
@@ -2436,6 +2738,14 @@ Internet-Draft             Yang Model for NAT              November 2017
                 "RFC 5382: NAT Behavioral Requirements for TCP";
             }
 
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 49]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
             leaf tcp-trans-open-timeout {
               type uint32;
               units "seconds";
@@ -2458,14 +2768,6 @@ Internet-Draft             Yang Model for NAT              November 2017
                  However, a minimum default transitory connection
                  idle-timeout of 4 minutes is recommended.";
               reference
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 44]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                 "Section 2.1 of RFC 7857.";
             }
 
@@ -2492,6 +2794,14 @@ Internet-Draft             Yang Model for NAT              November 2017
               description
                 "A NAT must not respond to an unsolicited
                 inbound SYN packet for at least 6 seconds
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 50]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
                 after the packet is received.  If during
                 this interval the NAT receives and translates
                 an outbound SYN for the connection the NAT
@@ -2514,14 +2824,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             }
 
             leaf icmp-timeout {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 45]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
               type uint32;
               units "seconds";
               default 60;
@@ -2548,6 +2850,14 @@ Internet-Draft             Yang Model for NAT              November 2017
                   "A port number.";
               }
 
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 51]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               leaf timeout {
                 type uint32;
                 units "seconds";
@@ -2569,14 +2879,6 @@ Internet-Draft             Yang Model for NAT              November 2017
 
                  The length of time and the maximum number of ports in
                  this state must be configurable by the administrator.
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 46]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
                  This is necessary in order to prevent collisions
                  between old and new mappings and sessions. It ensures
@@ -2604,10 +2906,18 @@ Internet-Draft             Yang Model for NAT              November 2017
                  instead of redirected to a different peer.";
               reference
                 "REQ#8 of RFC 6888.";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 52]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
             }
           }
 
-          leaf fragment-limit{
+          leaf fragments-limit{
             when "../fragment-behavior='out-of-order'";
             type uint32;
             description
@@ -2626,14 +2936,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               type string;
               description
                 "The name of the ALG.";
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 47]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
             }
 
             leaf transport-protocol {
@@ -2660,6 +2962,14 @@ Internet-Draft             Yang Model for NAT              November 2017
 
             leaf status {
               type boolean;
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 53]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               description
                 "Enable/disable the ALG.";
             }
@@ -2682,14 +2992,6 @@ Internet-Draft             Yang Model for NAT              November 2017
                are met.";
 
             leaf pool-id {
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 48]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
               type uint32;
               description
                 "Pool-ID for which the notification criteria
@@ -2704,9 +3006,9 @@ Internet-Draft             Yang Model for NAT              November 2017
 
                  For example, if a notification is required when the
                  pool utilization reaches 90%, this configuration
-                 parameter must be set to 90%.
+                 parameter must be set to 90.
 
-                 0% indicates that no high treshold is enabled.";
+                 0% indicates that no high threshold is enabled.";
             }
 
             leaf low-threshold {
@@ -2716,13 +3018,21 @@ Internet-Draft             Yang Model for NAT              November 2017
                   "The upper port number must be greater than or
                    equal to lower port number.";
               }
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 54]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               description
                 "Notification must be generated when the defined low
                  threshold is reached.
 
                  For example, if a notification is required when the
                  pool utilization reaches below 10%, this
-                 configuration parameter must be set to 10%.";
+                 configuration parameter must be set to 10";
             }
 
             leaf notify-interval {
@@ -2738,14 +3048,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               reference
                 "RFC 7659: Definitions of Managed Objects for
                            Network Address Translators (NATs)";
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 49]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
             }
           }
 
@@ -2771,7 +3073,15 @@ Internet-Draft             Yang Model for NAT              November 2017
           }
         }
 
-        container mapping-limit {
+        container mapping-limits {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 55]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           if-feature "napt44 or nat64";
           description
             "Information about the configuration parameters that
@@ -2795,15 +3105,8 @@ Internet-Draft             Yang Model for NAT              November 2017
               "Maximum number of address mappings that can be
                handled by a NAT instance.
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 50]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                When this limit is reached, packets that would
-               normaly trigger translation, will be dropped.";
+               normally trigger translation, will be dropped.";
              reference
                "RFC 7659: Definitions of Managed Objects
                           for Network Address Translators
@@ -2817,7 +3120,7 @@ Internet-Draft             Yang Model for NAT              November 2017
                by a NAT instance.
 
                When this limit is reached, packets that would
-               normaly trigger translation, will be dropped.";
+               normally trigger translation, will be dropped.";
              reference
                "RFC 7659: Definitions of Managed Objects for
                           Network Address Translators (NATs)";
@@ -2826,6 +3129,14 @@ Internet-Draft             Yang Model for NAT              November 2017
           list limit-per-protocol {
             if-feature "napt44 or nat64 or dst-nat";
             key protocol-id;
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 56]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
             description
               "Configure limits per transport protocol";
@@ -2837,7 +3148,8 @@ Internet-Draft             Yang Model for NAT              November 2017
                 "Upper-layer protocol associated with this mapping.
 
                  Values are taken from the IANA protocol registry:
-                 https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+                 https://www.iana.org/assignments/protocol-numbers/
+                 protocol-numbers.xhtml
 
                  For example, this field contains 6 (TCP) for a TCP
                  mapping or 17 (UDP) for a UDP mapping.";
@@ -2850,17 +3162,9 @@ Internet-Draft             Yang Model for NAT              November 2017
                  per instance.";
             }
           }
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 51]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
         }
 
-        container connection-limit {
+        container connection-limits {
           if-feature "basic-nat44 or napt44 or nat64";
           description
             "Information about the configuration parameters that
@@ -2883,6 +3187,13 @@ Internet-Draft             Yang Model for NAT              November 2017
                per instance.";
           }
 
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 57]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
           list limit-per-protocol {
             if-feature "napt44 or nat64";
             key protocol-id;
@@ -2896,7 +3207,8 @@ Internet-Draft             Yang Model for NAT              November 2017
                 "Upper-layer protocol associated with this mapping.
 
                  Values are taken from the IANA protocol registry:
-                 https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+                 https://www.iana.org/assignments/protocol-numbers/
+                 protocol-numbers.xhtml
 
                  For example, this field contains 6 (TCP) for a TCP
                  mapping or 17 (UDP) for a UDP mapping.";
@@ -2906,14 +3218,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               type uint32;
               description
                 "Rate-limit the number of protocol-specific mappings
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 52]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                  and sessions per instance.";
             }
           }
@@ -2931,13 +3235,21 @@ Internet-Draft             Yang Model for NAT              November 2017
             default '10';
             description
                 "Minimum number of seconds between successive
-                 notifications for  this NAT instance.";
+                 notifications for this NAT instance.";
             reference
               "RFC 7659: Definitions of Managed Objects
                          for Network Address Translators (NATs)";
         }
 
         leaf notify-addresses-usage {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 58]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
             if-feature "basic-nat44 or napt44 or nat64";
             type percent;
             description
@@ -2950,7 +3262,7 @@ Internet-Draft             Yang Model for NAT              November 2017
                For example, if a notification is required when
                the address mappings utilization reaches 90%,
                this configuration parameter must be set
-               to 90%.";
+               to 90.";
          }
 
         leaf notify-ports-usage {
@@ -2963,16 +3275,9 @@ Internet-Draft             Yang Model for NAT              November 2017
                Notification must be generated when the defined
                threshold is reached.
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 53]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                For example, if a notification is required when
                the port mappings utilization reaches 90%, this
-               configuration parameter must be set to 90%.";
+               configuration parameter must be set to 90.";
          }
         }
 
@@ -2993,6 +3298,14 @@ Internet-Draft             Yang Model for NAT              November 2017
              NAT, NAT64, or CLAT.";
 
           list mapping-entry {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 59]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
             key "index";
             description "NAT mapping entry.";
             uses mapping-entry;
@@ -3019,13 +3332,6 @@ Internet-Draft             Yang Model for NAT              November 2017
             description
               "Generic traffic statistics.";
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 54]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
             leaf sent-packets {
               type yang:zero-based-counter64;
               description
@@ -3048,6 +3354,14 @@ Internet-Draft             Yang Model for NAT              November 2017
             leaf rcvd-bytes {
               type yang:zero-based-counter64;
               units 'bytes';
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 60]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               description
                 "Counter for received traffic in bytes.";
             }
@@ -3074,14 +3388,6 @@ Internet-Draft             Yang Model for NAT              November 2017
 
             leaf dropped-address-limit-packets {
               if-feature "basic-nat44 or napt44 or nat64";
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 55]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
               type yang:zero-based-counter64;
               description
                 "Number of dropped packets because an address limit
@@ -3104,6 +3410,13 @@ Internet-Draft             Yang Model for NAT              November 2017
                 "Number of dropped packets because no address is
                  available for allocation.";
             }
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 61]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
             leaf dropped-address-bytes {
               if-feature "basic-nat44 or napt44 or nat64";
@@ -3131,13 +3444,6 @@ Internet-Draft             Yang Model for NAT              November 2017
                  is reached, in bytes.";
             }
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 56]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
             leaf dropped-port-packets {
               if-feature "napt44 or nat64";
               type yang:zero-based-counter64;
@@ -3160,6 +3466,14 @@ Internet-Draft             Yang Model for NAT              November 2017
               type yang:zero-based-counter64;
               description
                 "Number of dropped packets because the subscriber
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 62]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
                  limit per instance is reached.";
             }
 
@@ -3173,60 +3487,61 @@ Internet-Draft             Yang Model for NAT              November 2017
             }
           }
 
-          container mapping-statistics {
+          container mappings-statistics {
            description
-             "Mapping statistics.";
+             "Mappings statistics.";
 
-            leaf total-address-mappings {
-              if-feature "basic-nat44 or napt44 or nat64 or clat or dst-nat";
-              type yang:gauge32;
-              description
-                "Total number of address mappings present at a given
-                  time. It includes both static and dynamic mappings.";
-              reference
+           leaf total-address-mappings {
+             if-feature "basic-nat44 or napt44 or nat64 or clat or dst-nat";
+             type yang:gauge32;
+             description
+               "Total number of address mappings present at a given
+                time. It includes both static and dynamic mappings.";
+             reference
                "Section 3.3.8 of RFC 7659";
-            }
+           }
+
+           leaf total-port-mappings {
+             if-feature "napt44 or nat64";
+             type yang:gauge32;
+             description
+               "Total number of NAT port mappings present at
+                a given time. It includes both static and dynamic
+                mappings.";
+             reference
+               "Section 3.3.9 of RFC 7659";
+           }
+
+           list total-per-protocol {
+             if-feature "napt44 or nat64";
+             key protocol-id;
+             description
+               "Total mappings for each enabled/supported protocol.";
+
+             leaf protocol-id {
+               type uint8;
+               mandatory true;
+               description
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 57]
+Boucadair, et al.         Expires May 13, 2018                 [Page 63]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-            leaf total-port-mappings {
-              if-feature "napt44 or nat64";
-              type yang:gauge32;
-              description
-                "Total number of NAT port mappings present at
-                 a given time. It includes both static and dynamic
-                 mappings.";
-              reference
-               "Section 3.3.9 of RFC 7659";
-            }
+                 "Upper-layer protocol associated with this mapping.
+                  For example, this field contains 6 (TCP) for a TCP
+                  mapping or 17 (UDP) for a UDP mapping.";
+             }
 
-            leaf total-tcp-mappings {
-              if-feature "napt44 or nat64";
-              type yang:gauge32;
-              description
-                "Total number of TCP mappings present at
-                 a given time.";
-            }
-
-            leaf total-udp-mappings {
-              if-feature "napt44 or nat64";
-              type yang:gauge32;
-              description
-                "Total number of UDP mappings present at
-                 a given time.";
-            }
-
-           leaf total-icmp-mappings {
-             if-feature "napt44 or nat64";
-             type yang:gauge32;
-              description
-                "Total number of ICMP mappings present at
-                 a given time.";
+             leaf total {
+               type yang:gauge32;
+               description
+                 "Total number of a protocol-specific mappings present
+                  at a given time. The protocol is identified by
+                  protocol-id.";
+             }
             }
           }
 
@@ -3241,14 +3556,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               description
                 "Number of all allocated addresses.";
             }
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 58]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
             leaf addresses-free {
               type yang:gauge32;
@@ -3270,6 +3577,14 @@ Internet-Draft             Yang Model for NAT              November 2017
                 description
                   "Number of allocated ports from all pools.";
               }
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 64]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
               leaf ports-free {
                 type yang:gauge32;
@@ -3298,14 +3613,6 @@ Internet-Draft             Yang Model for NAT              November 2017
                 "The time on the most recent occasion at which this
                  pool counters suffered a discontinuity.  This must
                  be initialized when the address pool is
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 59]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
                  configured.";
             }
 
@@ -3327,6 +3634,14 @@ Internet-Draft             Yang Model for NAT              November 2017
              }
 
             container port-stats {
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 65]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
               if-feature "napt44 or nat64";
               description
                 "Statistics related to port numbers usage.";
@@ -3354,14 +3669,6 @@ Internet-Draft             Yang Model for NAT              November 2017
    * Notifications
    */
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 60]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
   notification nat-pool-event {
     if-feature "basic-nat44 or napt44 or nat64";
     description
@@ -3383,6 +3690,14 @@ Internet-Draft             Yang Model for NAT              November 2017
         path "/nat/instances/instance/policy/id";
       }
 
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 66]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
       description
         "Policy Identifier.";
     }
@@ -3402,7 +3717,7 @@ Internet-Draft             Yang Model for NAT              November 2017
       type percent;
       mandatory true;
       description
-        "A treshold (high-threshold or low-threshold) has
+        "A threshold (high-threshold or low-threshold) has
          been fired.";
     }
   }
@@ -3410,14 +3725,6 @@ Internet-Draft             Yang Model for NAT              November 2017
   notification nat-instance-event {
     if-feature "basic-nat44 or napt44 or nat64";
     description
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 61]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
       "Notifications must be generated when notify-addresses-usage
        and/or notify-ports-usagethreshold are reached.";
 
@@ -3433,13 +3740,21 @@ Internet-Draft             Yang Model for NAT              November 2017
     leaf notify-addresses-threshold {
       type percent;
       description
-        "The notify-addresses-usage treshold has been fired.";
+        "The notify-addresses-usage threshold has been fired.";
     }
 
     leaf notify-ports-threshold {
       type percent;
       description
-        "The notify-ports-usage treshold has been fired.";
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 67]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
+        "The notify-ports-usage threshold has been fired.";
     }
   }
 }
@@ -3466,14 +3781,6 @@ Internet-Draft             Yang Model for NAT              November 2017
    All data nodes defined in the YANG module which can be created,
    modified and deleted (i.e., config true, which is the default) are
    considered sensitive.  Write operations (e.g., edit-config) applied
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 62]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
    to these data nodes without proper protection can negatively affect
    network operations.  The NAT YANG module allows to set parameters to
    prevent a user from aggressively using NAT resources (port-quota),
@@ -3486,14 +3793,22 @@ Internet-Draft             Yang Model for NAT              November 2017
 
       *  /nat/instances/instance/policy/port-quota
 
-      *  /nat/instances/instance/policy/fragment-limit
+      *  /nat/instances/instance/policy/fragments-limit
 
-      *  /nat/instances/instance/mapping-limit
+      *  /nat/instances/instance/mapping-limits
 
-      *  /nat/instances/instance/connection-limit
+      *  /nat/instances/instance/connection-limits
 
    o  Set a low notification threshold to cause useless notifications to
       be generated:
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 68]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
       *  /nat/instances/instance/policy/notify-pool-usage/high-threshold
 
@@ -3523,13 +3838,6 @@ Internet-Draft             Yang Model for NAT              November 2017
    o  Access to privacy data maintained in the mapping table.  Such data
       can be misused to track the activity of a host:
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 63]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
       *  /nat/instances/instance/mapping-table
 
 5.  IANA Considerations
@@ -3549,6 +3857,14 @@ Internet-Draft             Yang Model for NAT              November 2017
             namespace: urn:ietf:params:xml:ns:yang:ietf-nat
             prefix: nat
             reference: RFC XXXX
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 69]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
 6.  Acknowledgements
 
@@ -3579,13 +3895,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               DOI 10.17487/RFC3688, January 2004,
               <https://www.rfc-editor.org/info/rfc3688>.
 
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 64]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
    [RFC4787]  Audet, F., Ed. and C. Jennings, "Network Address
               Translation (NAT) Behavioral Requirements for Unicast
               UDP", BCP 127, RFC 4787, DOI 10.17487/RFC4787, January
@@ -3605,6 +3914,13 @@ Internet-Draft             Yang Model for NAT              November 2017
               Behavioral Requirements for ICMP", BCP 148, RFC 5508,
               DOI 10.17487/RFC5508, April 2009,
               <https://www.rfc-editor.org/info/rfc5508>.
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 70]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
    [RFC6052]  Bao, C., Huitema, C., Bagnulo, M., Boucadair, M., and X.
               Li, "IPv6 Addressing of IPv4/IPv6 Translators", RFC 6052,
@@ -3634,14 +3950,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               DOI 10.17487/RFC6536, March 2012,
               <https://www.rfc-editor.org/info/rfc6536>.
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 65]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
    [RFC6877]  Mawatari, M., Kawashima, M., and C. Byrne, "464XLAT:
               Combination of Stateful and Stateless Translation",
               RFC 6877, DOI 10.17487/RFC6877, April 2013,
@@ -3663,6 +3971,13 @@ Internet-Draft             Yang Model for NAT              November 2017
               DOI 10.17487/RFC7597, July 2015,
               <https://www.rfc-editor.org/info/rfc7597>.
 
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 71]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
    [RFC7757]  Anderson, T. and A. Leiva Popper, "Explicit Address
               Mappings for Stateless IP/ICMP Translation", RFC 7757,
               DOI 10.17487/RFC7757, February 2016,
@@ -3673,6 +3988,11 @@ Internet-Draft             Yang Model for NAT              November 2017
               (NAT) Behavioral Requirements", BCP 127, RFC 7857,
               DOI 10.17487/RFC7857, April 2016,
               <https://www.rfc-editor.org/info/rfc7857>.
+
+   [RFC7915]  Bao, C., Li, X., Baker, F., Anderson, T., and F. Gont,
+              "IP/ICMP Translation Algorithm", RFC 7915,
+              DOI 10.17487/RFC7915, June 2016,
+              <https://www.rfc-editor.org/info/rfc7915>.
 
    [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
               RFC 7950, DOI 10.17487/RFC7950, August 2016,
@@ -3690,14 +4010,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               (PCP)", draft-boucadair-pcp-yang-05 (work in progress),
               October 2017.
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 66]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
    [I-D.ietf-softwire-dslite-yang]
               Boucadair, M., Jacquenet, C., and S. Sivakumar, "YANG Data
               Modules for the DS-Lite", draft-ietf-softwire-dslite-
@@ -3714,6 +4026,14 @@ Internet-Draft             Yang Model for NAT              November 2017
               RFC 2663, DOI 10.17487/RFC2663, August 1999,
               <https://www.rfc-editor.org/info/rfc2663>.
 
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 72]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
+
    [RFC3022]  Srisuresh, P. and K. Egevang, "Traditional IP Network
               Address Translator (Traditional NAT)", RFC 3022,
               DOI 10.17487/RFC3022, January 2001,
@@ -3724,6 +4044,11 @@ Internet-Draft             Yang Model for NAT              November 2017
               Control Protocol", BCP 150, RFC 5597,
               DOI 10.17487/RFC5597, September 2009,
               <https://www.rfc-editor.org/info/rfc5597>.
+
+   [RFC6269]  Ford, M., Ed., Boucadair, M., Durand, A., Levis, P., and
+              P. Roberts, "Issues with IP Address Sharing", RFC 6269,
+              DOI 10.17487/RFC6269, June 2011,
+              <https://www.rfc-editor.org/info/rfc6269>.
 
    [RFC6736]  Brockners, F., Bhandari, S., Singh, V., and V. Fajardo,
               "Diameter Network Address and Port Translation Control
@@ -3744,16 +4069,6 @@ Internet-Draft             Yang Model for NAT              November 2017
               DOI 10.17487/RFC7335, August 2014,
               <https://www.rfc-editor.org/info/rfc7335>.
 
-
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 67]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
-
    [RFC7659]  Perreault, S., Tsou, T., Sivakumar, S., and T. Taylor,
               "Definitions of Managed Objects for Network Address
               Translators (NATs)", RFC 7659, DOI 10.17487/RFC7659,
@@ -3763,6 +4078,17 @@ Internet-Draft             Yang Model for NAT              November 2017
               and S. Perreault, "Port Control Protocol (PCP) Extension
               for Port-Set Allocation", RFC 7753, DOI 10.17487/RFC7753,
               February 2016, <https://www.rfc-editor.org/info/rfc7753>.
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 73]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
    [RFC8045]  Cheng, D., Korhonen, J., Boucadair, M., and S. Sivakumar,
               "RADIUS Extensions for IP Port Configuration and
@@ -3784,31 +4110,6 @@ A.1.  Traditional NAT44
    disambiguating connections is achieved by rewriting the source port
    number.  The XML snippet to configure the external IPv4 address in
    such case together with a mapping entry is depicted below:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 68]
-
-Internet-Draft             Yang Model for NAT              November 2017
-
 
    <instances>
         <instance>
@@ -3837,34 +4138,16 @@ Internet-Draft             Yang Model for NAT              November 2017
    entry maintained by a traditional NAPT44.  In reference to this
    example, the UDP packet received with a source IPv4 address
    (192.0.2.1) and source port number (1568) is translated into a UDP
-   packet having a source IPv4 address (198.51.100.1) and source port
-   (15000).  The remaining lifetime of this mapping is 300 seconds.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 69]
+Boucadair, et al.         Expires May 13, 2018                 [Page 74]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
+
+   packet having a source IPv4 address (198.51.100.1) and source port
+   (15000).  The remaining lifetime of this mapping is 300 seconds.
 
    <mapping-entry>
      <index>15</index>
@@ -3895,7 +4178,7 @@ Internet-Draft             Yang Model for NAT              November 2017
      </lifetime>
    </mapping-entry>
 
-A.2.  CGN
+A.2.  Carrier Grade NAT (CGN)
 
    The following XML snippet shows the example of the capabilities
    supported by a CGN as retrieved using NETCONF.
@@ -3914,10 +4197,7 @@ A.2.  CGN
 
 
 
-
-
-
-Boucadair, et al.         Expires May 12, 2018                 [Page 70]
+Boucadair, et al.         Expires May 13, 2018                 [Page 75]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -3973,7 +4253,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 71]
+Boucadair, et al.         Expires May 13, 2018                 [Page 76]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4029,7 +4309,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 72]
+Boucadair, et al.         Expires May 13, 2018                 [Page 77]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4085,7 +4365,7 @@ A.3.  CGN Pass-Through
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 73]
+Boucadair, et al.         Expires May 13, 2018                 [Page 78]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4141,7 +4421,7 @@ A.4.  NAT64
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 74]
+Boucadair, et al.         Expires May 13, 2018                 [Page 79]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4157,10 +4437,50 @@ Internet-Draft             Yang Model for NAT              November 2017
       </destination-ipv4-prefix>
    </nat64-prefixes>
 
-A.5.  Explicit Address Mappings for Stateless IP/ICMP Translation
+A.5.  Stateless IP/ICMP Translation (SIIT)
+
+   Let's consider the example of a stateless translator that is
+   configured with 2001:db8:100::/40 to perform IPv6 address synthesis
+   [RFC6052].  Similar to the NAT64 case, the XML snippet to configure
+   the NAT64 prefix in such case is depicted below:
+
+   <nat64-prefixes>
+      <nat64-prefix>
+        2001:db8:100::/40
+      </nat64-prefix>
+   </nat64-prefixes>
+
+   When the translator receives an IPv6 packet, for example, with a
+   source address (2001:db8:1c0:2:21::) and destination address
+   (2001:db8:1c6:3364:2::), it extracts embedded IPv4 addresses
+   following RFC6052 rules with 2001:db8:100::/40 as the NSP:
+
+   o  192.0.2.33 is extracted from 2001:db8:1c0:2:21::
+
+   o  198.51.100.2 is extracted from 2001:db8:1c6:3364:2::
+
+   The translator transforms the IPv6 header into an IPv4 header using
+   the IP/ICMP Translation Algorithm [RFC7915].  The IPv4 packets will
+   include 192.0.2.33 as the source address and 198.51.100.2 as the
+   destination address.
+
+A.6.  Explicit Address Mappings for Stateless IP/ICMP Translation (EAM
+      SIIT)
 
    As specified in [RFC7757], an EAM consists of an IPv4 prefix and an
    IPv6 prefix.  Let's consider the set of EAM examples in Figure 2.
+
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 80]
+
+Internet-Draft             Yang Model for NAT              November 2017
+
 
                   +---+----------------+----------------------+
                   | # |  IPv4 Prefix   |     IPv6 Prefix      |
@@ -4197,7 +4517,23 @@ A.5.  Explicit Address Mappings for Stateless IP/ICMP Translation
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 75]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.         Expires May 13, 2018                 [Page 81]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4253,13 +4589,13 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 76]
+Boucadair, et al.         Expires May 13, 2018                 [Page 82]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
    EAMs may be enabled jointly with statefull NAT64.  This example shows
-   a NAT64 fucntion that supports static mappings:
+   a NAT64 function that supports static mappings:
 
    <capabilities
      <nat-flavor>
@@ -4309,12 +4645,12 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 77]
+Boucadair, et al.         Expires May 13, 2018                 [Page 83]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
 
-A.6.  Static Mappings with Port Ranges
+A.7.  Static Mappings with Port Ranges
 
    The following example shows a static mapping that instructs a NAT to
    translate packets issued from 192.0.2.1 and with source ports in the
@@ -4349,7 +4685,7 @@ A.6.  Static Mappings with Port Ranges
      ...
    </mapping-entry>
 
-A.7.  Static Mappings with IP Prefixes
+A.8.  Static Mappings with IP Prefixes
 
    The following example shows a static mapping that instructs a NAT to
    translate TCP packets issued from 192.0.2.1/24 to 198.51.100.1/24.
@@ -4365,7 +4701,7 @@ A.7.  Static Mappings with IP Prefixes
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 78]
+Boucadair, et al.         Expires May 13, 2018                 [Page 84]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4383,7 +4719,7 @@ Internet-Draft             Yang Model for NAT              November 2017
      ...
    </mapping-entry>
 
-A.8.  Destination NAT
+A.9.  Destination NAT
 
    The following XML snippet shows an example of a destination NAT that
    is instructed to translate all packets having 192.0.2.1 as a
@@ -4421,7 +4757,7 @@ A.8.  Destination NAT
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 79]
+Boucadair, et al.         Expires May 13, 2018                 [Page 85]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4477,7 +4813,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 80]
+Boucadair, et al.         Expires May 13, 2018                 [Page 86]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4533,7 +4869,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 81]
+Boucadair, et al.         Expires May 13, 2018                 [Page 87]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4549,7 +4885,7 @@ Internet-Draft             Yang Model for NAT              November 2017
    configured with static mapping entries that modifies the internal IP
    address and/or port number.
 
-A.9.  CLAT
+A.10.  Customer-side Translator (CLAT)
 
    The following XML snippet shows the example of a CLAT that is
    configured with 2001:db8:1234::/96 as PLAT-side IPv6 prefix and
@@ -4574,7 +4910,7 @@ A.9.  CLAT
    </nat64-prefixes>
 
 
-A.10.  NPTv6
+A.11.  IPv6 Network Prefix Translation (NPTv6)
 
    Let's consider the example of a NPTv6 translator that should rewrite
    packets with the source prefix (fd01:203:405:/48) with the external
@@ -4589,7 +4925,7 @@ A.10.  NPTv6
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 82]
+Boucadair, et al.         Expires May 13, 2018                 [Page 88]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4645,7 +4981,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 83]
+Boucadair, et al.         Expires May 13, 2018                 [Page 89]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4701,7 +5037,7 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 84]
+Boucadair, et al.         Expires May 13, 2018                 [Page 90]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4757,7 +5093,7 @@ Authors' Addresses
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 85]
+Boucadair, et al.         Expires May 13, 2018                 [Page 91]
 
 Internet-Draft             Yang Model for NAT              November 2017
 
@@ -4813,4 +5149,4 @@ Internet-Draft             Yang Model for NAT              November 2017
 
 
 
-Boucadair, et al.         Expires May 12, 2018                 [Page 86]
+Boucadair, et al.         Expires May 13, 2018                 [Page 92]
