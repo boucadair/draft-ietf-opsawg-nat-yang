@@ -1,0 +1,672 @@
+
+
+
+
+Network Working Group                                       M. Boucadair
+Internet-Draft                                                    Orange
+Intended status: Experimental                               S. Sivakumar
+Expires: August 10, 2018                                   Cisco Systems
+                                                            C. Jacquenet
+                                                                  Orange
+                                                           S. Vinapamula
+                                                        Juniper Networks
+                                                                   Q. Wu
+                                                                  Huawei
+                                                        February 6, 2018
+
+
+       A YANG Module for IPv6 Network Prefix Translation (NPTv6)
+                    draft-ietf-opsawg-nptv6-yang-00
+
+Abstract
+
+   This document defines a YANG module for the IPv6 Network Prefix
+   Translation (NPTv6).
+
+Editorial Note (To be removed by RFC Editor)
+
+   Please update these statements with the RFC number to be assigned to
+   this document:
+
+      "This version of this YANG module is part of RFC XXXX;"
+
+      "RFC XXXX: A YANG Module for IPv6 Network Prefix Translation
+      (NPTv6)";
+
+      "reference: RFC XXXX"
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 1]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+   This Internet-Draft will expire on August 10, 2018.
+
+Copyright Notice
+
+   Copyright (c) 2018 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (https://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  NPTv6 YANG Tree Structure . . . . . . . . . . . . . . . . . .   3
+   3.  NPTv6 YANG Module . . . . . . . . . . . . . . . . . . . . . .   3
+   4.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   Appendix A.  Sample Examples  . . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+
+1.  Introduction
+
+   This document defines a data model for the IPv6 Network Prefix
+   Translation (NPT) capabilities [RFC6269] using the YANG data modeling
+   language [RFC7950].
+
+   This document follows the guidelines of [RFC6087] and adopts the
+   Network Management Datastore Architecture (NMDA).
+
+   Sample examples are provided in Appendix A to ilustrate how NPTv6
+   YANG module can be used.  These examples are not intended to be
+   exhaustive.
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 2]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+1.1.  Terminology
+
+   This document makes use of the terms defined in
+   [I-D.ietf-opsawg-nat-yang].
+
+   The terminology for describing YANG data modules is defined in
+   [RFC7950].
+
+   The meaning of the symbols in tree diagrams is defined in
+   [I-D.ietf-netmod-yang-tree-diagrams].
+
+2.  NPTv6 YANG Tree Structure
+
+   NPTv6 relies upon a stateless algorithm for translating IPv6
+   prefixes.  From that standpoint, the NPTv6 YANG module is designed to
+   augment the IETF NAT YANG module with the required information for
+   the stateless prefix translation.
+
+   The tree structure of the NPTv6 YANG module is provided below:
+
+   module: ietf-nptv6
+     augment /nat:nat/nat:instances/nat:instance/nat:policy:
+       +--rw nptv6-prefixes* [internal-ipv6-prefix]
+          +--rw internal-ipv6-prefix    inet:ipv6-prefix
+          +--rw external-ipv6-prefix    inet:ipv6-prefix
+
+3.  NPTv6 YANG Module
+
+  <CODE BEGINS> file "ietf-nptv6@2018-02-06.yang"
+
+  module ietf-nptv6 {
+    yang-version 1.1;
+
+    namespace "urn:ietf:params:xml:ns:yang:ietf-nptv6";
+    prefix nptv6;
+
+    import ietf-inet-types { prefix inet; }
+    import ietf-nat {prefix nat;}
+
+    organization
+      "IETF OPSAWG (Operations and Management Area Working Group)";
+
+    contact
+
+      "WG Web:   <https://datatracker.ietf.org/wg/opsawg/>
+       WG List:  <mailto:opsawg@ietf.org>
+
+       Editor:  Mohamed Boucadair
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 3]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+                <mailto:mohamed.boucadair@orange.com>
+
+       Editor:  Senthil Sivakumar
+                <mailto:ssenthil@cisco.com>
+
+       Editor:  Christian Jacquenet
+                <mailto:christian.jacquenet@orange.com>
+
+       Editor:  Suresh Vinapamula
+                <mailto:sureshk@juniper.net>
+
+       Editor:  Qin Wu
+                <mailto:bill.wu@huawei.com>";
+
+     description
+        "This module is a YANG module for NPTv6 implementations.
+
+        Copyright (c) 2018 IETF Trust and the persons identified as
+        authors of the code.  All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject
+        to the license terms contained in, the Simplified BSD License
+        set forth in Section 4.c of the IETF Trust's Legal Provisions
+        Relating to IETF Documents
+        (http://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX; see
+        the RFC itself for full legal notices.";
+
+    revision 2018-02-06 {
+      description
+        "Initial revision.";
+      reference
+        "RFC XXXX: A YANG Module for IPv6 Network Prefix Translation
+                  (NPTv6)";
+    }
+
+    identity nptv6 {
+      base nat:nat-type;
+      description
+        "Identity for NPTv6 support.";
+      reference
+        "RFC 6296: IPv6-to-IPv6 Network Prefix Translation";
+    }
+
+   /*
+    * Augments
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 4]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+    */
+
+    augment "/nat:nat/nat:instances/nat:instance/nat:policy" {
+      when "derived-from-or-self(/nat:nat/nat:instances/nat:instance/" +
+           "nat:type, 'nptv6')";
+
+      description
+        "Augments the NAT module with NPTv6 parameters.";
+
+      list nptv6-prefixes {
+        key internal-ipv6-prefix ;
+        description
+          "Provides one or a list of (internal IPv6 prefix,
+           external IPv6 prefix) required for NPTv6.
+
+           In its simplest form, NPTv6 interconnects two network
+           links, one of which is an 'internal' network link
+           attached to a leaf network within a single
+           administrative domain and the other of which is an
+           'external' network with connectivity to the global
+           Internet.";
+        reference
+           "RFC 6296: IPv6-to-IPv6 Network Prefix Translation";
+
+        leaf internal-ipv6-prefix {
+          type inet:ipv6-prefix;
+          mandatory true;
+          description
+            "An IPv6 prefix used by an internal interface of NPTv6.";
+          reference
+            "RFC 6296: IPv6-to-IPv6 Network Prefix Translation";
+        }
+        leaf external-ipv6-prefix {
+          type inet:ipv6-prefix;
+          mandatory true;
+          description
+            "An IPv6 prefix used by the external interface of NPTv6.";
+          reference
+            "RFC 6296: IPv6-to-IPv6 Network Prefix Translation";
+        }
+      }
+    }
+  }
+  <CODE ENDS>
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 5]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+4.  Security Considerations
+
+   Security considerations related to prefix translation are discussed
+   in [RFC6296].
+
+   The YANG module defined in this document is designed to be accessed
+   via network management protocols such as NETCONF [RFC6241] or
+   RESTCONF [RFC8040].  The lowest NETCONF layer is the secure transport
+   layer, and the mandatory-to-implement secure transport is Secure
+   Shell (SSH) [RFC6242].  The lowest RESTCONF layer is HTTPS, and the
+   mandatory-to-implement secure transport is TLS [RFC5246].
+
+   The NETCONF access control model [RFC6536] provides the means to
+   restrict access for particular NETCONF or RESTCONF users to a
+   preconfigured subset of all available NETCONF or RESTCONF protocol
+   operations and content.
+
+   All data nodes defined in the YANG module which can be created,
+   modified and deleted (i.e., config true, which is the default) are
+   considered sensitive.  Write operations (e.g., edit-config) applied
+   to these data nodes without proper protection can negatively affect
+   network operations.  The NAT YANG module allows to set parameters to
+   prevent a user from aggressively using NAT resources (port-quota),
+   rate-limit connections as a guard against Denial-of-Service, or to
+   enable notifications so that appropriate measures are enforced to
+   anticipate traffic drops.
+
+5.  IANA Considerations
+
+   This document requests IANA to register the following URI in the
+   "IETF XML Registry" [RFC3688]:
+
+            URI: urn:ietf:params:xml:ns:yang:ietf-nptv6
+            Registrant Contact: The IESG.
+            XML: N/A; the requested URI is an XML namespace.
+
+
+   This document requests IANA to register the following YANG module in
+   the "YANG Module Names" registry [RFC7950].
+
+            name: ietf-nptv6
+            namespace: urn:ietf:params:xml:ns:yang:ietf-nptv6
+            prefix: nptv6
+            reference: RFC XXXX
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 6]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+6.  Acknowledgements
+
+   Many thanks to Dan Wing and Tianran Zhou for the review.
+
+   Thanks to Juergen Schoenwaelder for the comments on the YANG
+   structure and the suggestion to use NMDA.  Mahesh Jethanandani
+   provided useful comments.
+
+   Thanks to Lee Howard and Jordi Palet for the CLAT comments, Fred
+   Baker for the NPTv6 comments, Tore Anderson for EAM SIIT review, and
+   Kristian Poscic for the CGN review.
+
+   Special thanks to Maros Marsalek and Marek Gradzki for sharing their
+   comments based on the FD.io implementation of an earlier version of
+   this module.
+
+   Rajiv Asati suggested to clarify how the module applies for both
+   stateless and stateful NAT64.
+
+   Juergen Schoenwaelder provided an early yandgoctors review.  Many
+   thanks to him.
+
+   Thanks to Roni Even, Mach Chen, and Tim Chown for the directorates
+   review.  Igor Ryzhov identified a nit in one example.
+
+7.  References
+
+7.1.  Normative References
+
+   [I-D.ietf-opsawg-nat-yang]
+              Boucadair, M., Sivakumar, S., Jacquenet, C., Vinapamula,
+              S., and Q. Wu, "A YANG Data Model for Network Address
+              Translation (NAT) and Network Prefix Translation (NPT)",
+              draft-ietf-opsawg-nat-yang-10 (work in progress), January
+              2018.
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
+              (TLS) Protocol Version 1.2", RFC 5246,
+              DOI 10.17487/RFC5246, August 2008,
+              <https://www.rfc-editor.org/info/rfc5246>.
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 7]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC6242]  Wasserman, M., "Using the NETCONF Protocol over Secure
+              Shell (SSH)", RFC 6242, DOI 10.17487/RFC6242, June 2011,
+              <https://www.rfc-editor.org/info/rfc6242>.
+
+   [RFC6536]  Bierman, A. and M. Bjorklund, "Network Configuration
+              Protocol (NETCONF) Access Control Model", RFC 6536,
+              DOI 10.17487/RFC6536, March 2012,
+              <https://www.rfc-editor.org/info/rfc6536>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+7.2.  Informative References
+
+   [I-D.ietf-netmod-yang-tree-diagrams]
+              Bjorklund, M. and L. Berger, "YANG Tree Diagrams", draft-
+              ietf-netmod-yang-tree-diagrams-05 (work in progress),
+              January 2018.
+
+   [RFC6087]  Bierman, A., "Guidelines for Authors and Reviewers of YANG
+              Data Model Documents", RFC 6087, DOI 10.17487/RFC6087,
+              January 2011, <https://www.rfc-editor.org/info/rfc6087>.
+
+   [RFC6269]  Ford, M., Ed., Boucadair, M., Durand, A., Levis, P., and
+              P. Roberts, "Issues with IP Address Sharing", RFC 6269,
+              DOI 10.17487/RFC6269, June 2011,
+              <https://www.rfc-editor.org/info/rfc6269>.
+
+   [RFC6296]  Wasserman, M. and F. Baker, "IPv6-to-IPv6 Network Prefix
+              Translation", RFC 6296, DOI 10.17487/RFC6296, June 2011,
+              <https://www.rfc-editor.org/info/rfc6296>.
+
+Appendix A.  Sample Examples
+
+   Let's consider the example of a NPTv6 translator that should rewrite
+   packets with the source prefix (fd03:c03a:ecab::/48) with the
+   external prefix (2001:db8:1::/48).  The internal interface is "eth0"
+   while the external interface is "eth1" (Figure 1).
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 8]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+                  External Network:  Prefix = 2001:db8:1::/48
+                      --------------------------------------
+                                        |
+                                        |eth1
+                                 +-------------+
+                             eth4|     NPTv6   |eth2
+                         ...-----|             |------...
+                                 +-------------+
+                                        |eth0
+                                        |
+                      --------------------------------------
+                  Internal Network:  Prefix = fd03:c03a:ecab::/48
+
+                        Figure 1: Example of NPTv6
+
+   The XML snippet to configure NPTv6 prefixes in such case is depicted
+   below:
+
+   <nptv6:nptv6-prefixes>
+    <nptv6:internal-ipv6-prefix>
+     fd03:c03a:ecab::/48
+    </nptv6:internal-ipv6-prefix>
+    <nptv6:external-ipv6-prefix>
+     2001:db8:1::/48
+    </nptv6:external-ipv6-prefix>
+   </nptv6:nptv6-prefixes>
+   ...
+   <nptv6:external-realm>
+    <nptv6:external-interface>
+     eth1
+    </nptv6:external-interface>
+   </nptv6:external-realm>
+
+   Figure 2 shows an example of an NPTv6 that interconnects two internal
+   networks (fd03:c03a:ecab::/48 and fda8:d5cb:14f3::/48); each is
+   translated using a dedicated prefix (2001:db8:1::/48 and
+   2001:db8:6666::/48, respectively).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018                [Page 9]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+                     Internal Prefix = fda8:d5cb:14f3::/48
+                     --------------------------------------
+                          V            |      External Prefix
+                          V            |eth1   2001:db8:1::/48
+                          V        +---------+      ^
+                          V        |  NPTv6  |      ^
+                          V        |         |      ^
+                          V        +---------+      ^
+                 External Prefix       |eth0        ^
+                 2001:db8:6666::/48    |            ^
+                     --------------------------------------
+                     Internal Prefix = fd03:c03a:ecab::/48
+
+                  Figure 2: Connecting two Peer Networks
+
+   To that aim, the following configuration is provided to the NPTv6:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018               [Page 10]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+   <policy>
+    <id>1</id>
+    <nptv6:nptv6-prefixes>
+     <nptv6:internal-ipv6-prefix>
+      fd03:c03a:ecab::/48
+     </nptv6:internal-ipv6-prefix>
+     <nptv6:external-ipv6-prefix>
+      2001:db8:1::/48
+     </nptv6:external-ipv6-prefix>
+    </nptv6:nptv6-prefixes>
+    <external-realm>
+     <external-interface>
+      eth1
+     </external-interface>
+    </external-realm>
+   </policy>
+   <policy>
+    <id>2</id>
+    <nptv6:nptv6-prefixes>
+     <nptv6:internal-ipv6-prefix>
+      fda8:d5cb:14f3::/48
+     </nptv6:internal-ipv6-prefix>
+     <nptv6:external-ipv6-prefix>
+      2001:db8:6666::/48
+     </nptv6:external-ipv6-prefix>
+    </nptv6:nptv6-prefixes>
+    <external-realm>
+     <external-interface>
+      eth0
+     </external-interface>
+    </external-realm>
+   </policy>
+
+Authors' Addresses
+
+   Mohamed Boucadair
+   Orange
+   Rennes  35000
+   France
+
+   Email: mohamed.boucadair@orange.com
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018               [Page 11]
+
+Internet-Draft            YANG Module for NPTv6            February 2018
+
+
+   Senthil Sivakumar
+   Cisco Systems
+   7100-8 Kit Creek Road
+   Research Triangle Park, North Carolina  27709
+   USA
+
+   Phone: +1 919 392 5158
+   Email: ssenthil@cisco.com
+
+
+   Christian Jacquenet
+   Orange
+   Rennes  35000
+   France
+
+   Email: christian.jacquenet@orange.com
+
+
+   Suresh Vinapamula
+   Juniper Networks
+   1133 Innovation Way
+   Sunnyvale  94089
+   USA
+
+   Email: sureshk@juniper.net
+
+
+   Qin Wu
+   Huawei
+   101 Software Avenue, Yuhua District
+   Nanjing, Jiangsu  210012
+   China
+
+   Email: bill.wu@huawei.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires August 10, 2018               [Page 12]
